@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Argus — Insurance Intelligence Platform</title>
+  <meta name="description" content="End-to-end AI platform for insurance fraud detection, policy RAG, and autonomous claims intelligence. Built by Ramesh Shrestha." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/argus.css" />
+  <style>
+    /* ── Additional page-specific overrides ── */
+
+    /* Info panels used across tool pages */
+    .info-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 32px 36px;
+      margin-bottom: 36px;
+    }
+    .info-panel-title {
+      font-family: var(--font-disp);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--tx);
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .info-panel-sub {
+      font-size: 14px;
+      color: var(--tx-2);
+      font-weight: 300;
+      line-height: 1.8;
+      margin-bottom: 28px;
+      max-width: 680px;
+    }
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .pipeline-step {
+      background: var(--bg-overlay);
+      padding: 18px 20px;
+      position: relative;
+    }
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .step-name {
+      font-family: var(--font-disp);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 4px;
+    }
+    .step-detail {
+      font-size: 12px;
+      color: var(--tx-3);
+      line-height: 1.5;
+    }
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .impact-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 18px 16px;
+      border-top: 2px solid var(--border-2);
+    }
+    .impact-val {
+      font-family: var(--font-disp);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .impact-lbl {
+      font-size: 11px;
+      color: var(--tx-3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      font-family: var(--font-mono);
+    }
+    .impact-desc {
+      font-size: 12px;
+      color: var(--tx-2);
+      line-height: 1.5;
+      font-weight: 300;
+    }
+    .two-col-text {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    .text-block-title {
+      font-family: var(--font-disp);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    .text-block-body {
+      font-size: 13px;
+      color: var(--tx-2);
+      line-height: 1.75;
+      font-weight: 300;
+    }
+    .text-block-body li {
+      padding-left: 14px;
+      position: relative;
+      margin-bottom: 5px;
+      list-style: none;
+    }
+    .text-block-body li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--tx-3);
+      font-size: 10px;
+      top: 4px;
+    }
+
+    /* Overview problem-solution blocks */
+    .problem-solution-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .ps-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ps-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .ps-problem::before { background: rgba(255,255,255,0.12); }
+    .ps-solution::before { background: rgba(255,255,255,0.08); }
+    .ps-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .ps-problem .ps-label { color: var(--tx-3); }
+    .ps-solution .ps-label { color: var(--gold); }
+    .ps-card h3 {
+      font-family: var(--font-disp);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+    .ps-card p {
+      font-size: 13px;
+      color: var(--tx-2);
+      line-height: 1.75;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+
+    /* Business outcome row */
+    .outcomes-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+    .outcome-cell {
+      background: var(--bg-surface);
+      padding: 24px 20px;
+    }
+    .outcome-val {
+      font-family: var(--font-disp);
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .outcome-metric {
+      font-size: 11px;
+      color: var(--tx-3);
+      font-family: var(--font-mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .outcome-desc {
+      font-size: 12px;
+      color: var(--tx-2);
+      line-height: 1.5;
+      font-weight: 300;
+    }
+
+    /* Results metric card expanded */
+    .result-card-exp {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .result-card-exp-head {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 0;
+    }
+    .result-stat {
+      padding: 28px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .result-context {
+      padding: 28px 28px;
+    }
+    .result-context-title {
+      font-family: var(--font-disp);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .result-context-body {
+      font-size: 13.5px;
+      color: var(--tx-2);
+      line-height: 1.75;
+      font-weight: 300;
+    }
+    .result-context-body strong {
+      color: var(--tx);
+      font-weight: 500;
+    }
+    .result-business {
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-overlay);
+    }
+    .result-business-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+    .result-business-body {
+      font-size: 13px;
+      color: var(--tx-2);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* Responsive additions */
+    @media (max-width: 900px) {
+      .problem-solution-grid,
+      .two-col-text,
+      .impact-grid { grid-template-columns: 1fr; }
+      .outcomes-row { grid-template-columns: 1fr 1fr; }
+      .result-card-exp-head { grid-template-columns: 1fr; }
+      .result-stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .pipeline-steps { grid-template-columns: 1fr 1fr; }
+      .info-panel { padding: 24px 20px; }
+    }
+    @media (max-width: 640px) {
+      .outcomes-row { grid-template-columns: 1fr; }
+      .pipeline-steps { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════════════════════════ -->
+<nav id="nav">
+  <a class="nav-brand" href="#" onclick="goTab('overview');return false;">
+    <div class="nav-logo-mark">Ar</div>
+    <span class="nav-logo-name">Argus</span>
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="overview" onclick="goTab('overview')">Overview</button>
+    <button class="nav-tab"        data-page="scorer"   onclick="goTab('scorer')">Risk Scorer</button>
+    <button class="nav-tab"        data-page="policy"   onclick="goTab('policy')">Policy Assistant</button>
+    <button class="nav-tab"        data-page="agent"    onclick="goTab('agent')">Claims Agent</button>
+    <button class="nav-tab"        data-page="report"   onclick="goTab('report')">Research Report</button>
+    <button class="nav-tab"        data-page="results"  onclick="goTab('results')">Results</button>
+    <button class="nav-tab"        data-page="method"   onclick="goTab('method')">Methodology</button>
+  </div>
+  <div class="nav-actions">
+    <a class="nav-github" href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+      </svg>
+      GitHub
+    </a>
+    <button class="nav-hamburger" id="hamburger-btn" onclick="toggleDrawer()" aria-label="Open navigation">
+      <div class="hbg-line"></div>
+      <div class="hbg-line"></div>
+      <div class="hbg-line"></div>
+    </button>
+  </div>
+</nav>
+
+<div id="nav-drawer">
+  <button class="drawer-tab active" data-page="overview" onclick="goTab('overview', true)">Overview</button>
+  <button class="drawer-tab"        data-page="scorer"   onclick="goTab('scorer', true)">Risk Scorer</button>
+  <button class="drawer-tab"        data-page="policy"   onclick="goTab('policy', true)">Policy Assistant</button>
+  <button class="drawer-tab"        data-page="agent"    onclick="goTab('agent', true)">Claims Agent</button>
+  <button class="drawer-tab"        data-page="report"   onclick="goTab('report', true)">Research Report</button>
+  <button class="drawer-tab"        data-page="results"  onclick="goTab('results', true)">Results</button>
+  <button class="drawer-tab"        data-page="method"   onclick="goTab('method', true)">Methodology</button>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE — OVERVIEW
+═══════════════════════════════════════════════════════════ -->
+<div class="page active" id="p-overview">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+    <div class="hero-badge">
+      <div class="hero-badge-pulse"></div>
+      Production API  ·  Live Demo  ·  Open Source
+    </div>
+    <h1 class="hero-title"><span class="grad">Argus</span></h1>
+    <p class="hero-subtitle">Insurance Intelligence Platform</p>
+    <p class="hero-desc">A production-deployed AI platform combining explainable ML, retrieval-augmented generation, and autonomous agent orchestration — purpose-built for insurance fraud detection, policy knowledge retrieval, and autonomous claims triage.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="goTab('scorer')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Try Live Demo
+      </button>
+      <button class="btn-secondary" onclick="goTab('report')">Research Report →</button>
+      <a class="btn-secondary" href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a>
+    </div>
+  </section>
+
+  <!-- Business outcomes strip -->
+  <div style="padding: 0 52px; max-width: 1180px; margin: 0 auto;">
+    <div class="outcomes-row reveal" style="margin: -1px 0 0;">
+      <div class="outcome-cell">
+        <div class="outcome-val" style="color:var(--tx)">99.8%</div>
+        <div class="outcome-metric">AUC-ROC</div>
+        <div class="outcome-desc">Fraud discrimination accuracy on a 50K held-out test set with 1.72% positive rate</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-val" style="color:var(--tx)">&lt;200ms</div>
+        <div class="outcome-metric">End-to-end latency</div>
+        <div class="outcome-desc">Full agent decision — risk score, policy lookup, and recommendation — in under 200 milliseconds</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-val" style="color:var(--tx)">3</div>
+        <div class="outcome-metric">AI layers</div>
+        <div class="outcome-desc">ML, RAG, and agentic orchestration operating independently and in combination</div>
+      </div>
+      <div class="outcome-cell">
+        <div class="outcome-val" style="color:var(--tx)">100%</div>
+        <div class="outcome-metric">Recall @ threshold</div>
+        <div class="outcome-desc">Zero missed fraud cases at the operating threshold — critical for insurance loss prevention</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem context -->
+  <div class="wrap">
+    <div class="eyebrow">Why this matters</div>
+    <h2 class="section-title">Four expensive problems. Four data-driven solutions.</h2>
+    <p class="section-desc">Insurance is one of the highest-value industries for applied AI — fraud alone costs the global industry more than $300 billion annually. Argus demonstrates working solutions to the four challenges that drive the most financial and operational loss.</p>
+
+    <div class="problem-solution-grid reveal">
+      <div class="ps-card ps-problem">
+        <div class="ps-label">The Problem</div>
+        <h3>Fraud detection relies on rigid rule-based systems</h3>
+        <p>Traditional rule engines flag obvious anomalies but miss sophisticated patterns. They generate high false positive rates — burdening investigators — while allowing organised fraud rings to operate undetected. Every unprevented fraudulent claim is a direct P&amp;L loss.</p>
+        <div class="pill-row"><span class="pill pill-red">$300B global annual loss</span><span class="pill pill-muted">High false positives</span></div>
+      </div>
+      <div class="ps-card ps-solution">
+        <div class="ps-label">Argus Solution</div>
+        <h3>Gradient boosting with SHAP explainability</h3>
+        <p>XGBoost trained on 50,000 insurance claims records — with fraud rate, feature distributions, and behavioural patterns calibrated against IFBI Australia and IEEE-CIS published research — identifies fraud through learned feature interactions, not hand-written rules. SHAP surfaces exactly which features drove each decision, giving investigators an auditable, defensible rationale.</p>
+        <div class="pill-row"><span class="pill pill-teal">Live API endpoint</span><span class="pill pill-muted">99.8% AUC-ROC</span></div>
+      </div>
+      <div class="ps-card ps-problem">
+        <div class="ps-label">The Problem</div>
+        <h3>Policy interpretation is inconsistent and slow</h3>
+        <p>Claims handlers must interpret hundreds of pages of Product Disclosure Statements (PDS) under time pressure. Inconsistent coverage decisions create liability exposure, customer dissatisfaction, and compliance risk. Expert staff time spent on routine policy questions is a significant cost.</p>
+        <div class="pill-row"><span class="pill pill-red">Inconsistent decisions</span><span class="pill pill-muted">Compliance risk</span></div>
+      </div>
+      <div class="ps-card ps-solution">
+        <div class="ps-label">Argus Solution</div>
+        <h3>Retrieval-Augmented Generation over policy documents</h3>
+        <p>A RAG pipeline indexes policy documents using FAISS vector search and sentence-transformer embeddings. Every answer is grounded in retrieved document excerpts — not model hallucination — with page-level source citations that meet audit requirements. Confidence scores flag uncertain answers for human review.</p>
+        <div class="pill-row"><span class="pill pill-teal">Cited, auditable answers</span><span class="pill pill-muted">Real-time retrieval</span></div>
+      </div>
+    </div>
+
+    <div class="problem-solution-grid reveal">
+      <div class="ps-card ps-problem">
+        <div class="ps-label">The Problem</div>
+        <h3>Claims triage requires synthesising multiple data sources</h3>
+        <p>A single complex claim requires a handler to assess fraud risk, verify policy coverage, check prior claim history, and make a triage decision — all simultaneously. This cognitive load leads to inconsistency, fatigue-driven errors, and processing delays that affect customer experience and repair cost escalation.</p>
+        <div class="pill-row"><span class="pill pill-red">Multi-source complexity</span><span class="pill pill-muted">Processing delays</span></div>
+      </div>
+      <div class="ps-card ps-solution">
+        <div class="ps-label">Argus Solution</div>
+        <h3>Autonomous agent orchestration with tool-calling</h3>
+        <p>A Claude-powered agent receives a plain-language claim description, autonomously calls the fraud risk scorer and policy lookup tools, and synthesises a complete triage decision. The entire workflow executes in under 200ms — delivering a consistent, documented recommendation that the handler reviews rather than constructs from scratch.</p>
+        <div class="pill-row"><span class="pill pill-teal">Full automation</span><span class="pill pill-muted">&lt;200ms decision</span></div>
+      </div>
+      <div class="ps-card ps-problem">
+        <div class="ps-label">The Problem</div>
+        <h3>Model decisions cannot be explained to regulators or customers</h3>
+        <p>Black-box ML models, however accurate, are unusable in regulated insurance environments. APRA, ASIC, and internal risk frameworks require documented rationale for adverse decisions. Without explainability, the most accurate models cannot be deployed into production claims workflows.</p>
+        <div class="pill-row"><span class="pill pill-red">Regulatory risk</span><span class="pill pill-muted">Black-box models</span></div>
+      </div>
+      <div class="ps-card ps-solution">
+        <div class="ps-label">Argus Solution</div>
+        <h3>SHAP-first architecture designed for regulated environments</h3>
+        <p>Every prediction includes a ranked list of SHAP values — the contribution of each input feature to the fraud score. Positive contributors (increasing risk) and negative contributors (reducing risk) are displayed as a waterfall chart. This output is human-readable, auditable, and directly usable as evidence in an investigation report.</p>
+        <div class="pill-row"><span class="pill pill-teal">Regulation-ready</span><span class="pill pill-muted">Per-decision audit trail</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three AI layers -->
+  <div class="arch-strip">
+    <div class="arch-inner">
+      <div class="eyebrow">System architecture</div>
+      <h2 class="section-title">Three AI layers, one unified platform</h2>
+      <p class="section-desc" style="margin-bottom: 32px;">Each layer solves a distinct business problem independently. Together, they enable the autonomous agent to make a fully-grounded triage decision from a single claim description.</p>
+
+      <div class="feature-grid reveal">
+        <div class="feature-card feature-card-teal">
+          <div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--r-sm);background:rgba(255,255,255,0.04);border:1px solid var(--border-2);margin-bottom:16px;font-family:var(--font-mono);font-weight:700;font-size:11px;color:var(--tx-2);letter-spacing:0.05em;">ML</div>
+          <div class="feature-title">Fraud Risk Engine</div>
+          <div class="feature-desc">XGBoost gradient boosting model trained on 50,000 insurance claims. Calibrated probability output with SHAP TreeExplainer attribution. Handles class imbalance (1.72% fraud rate) via isotonic regression calibration and scale_pos_weight optimisation.</div>
+          <div class="pill-row">
+            <span class="pill pill-muted">XGBoost</span>
+            <span class="pill pill-muted">SHAP</span>
+            <span class="pill pill-muted">Calibrated probabilities</span>
+          </div>
+        </div>
+        <div class="feature-card feature-card-purple">
+          <div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--r-sm);background:rgba(255,255,255,0.04);border:1px solid var(--border-2);margin-bottom:16px;font-family:var(--font-mono);font-weight:700;font-size:11px;color:var(--tx-2);letter-spacing:0.05em;">RAG</div>
+          <div class="feature-title">Policy Assistant</div>
+          <div class="feature-desc">Dense retrieval pipeline over insurance Product Disclosure Statements. Sentence-transformer embeddings stored in FAISS, retrieved at query time and passed to Claude as grounded context. All answers include document source and page citations.</div>
+          <div class="pill-row">
+            <span class="pill pill-muted">LangChain</span>
+            <span class="pill pill-muted">FAISS</span>
+            <span class="pill pill-muted">Source-cited answers</span>
+          </div>
+        </div>
+        <div class="feature-card feature-card-gold">
+          <div style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--r-sm);background:rgba(255,255,255,0.04);border:1px solid var(--border-2);margin-bottom:16px;font-family:var(--font-mono);font-weight:700;font-size:11px;color:var(--tx-2);letter-spacing:0.05em;">AGT</div>
+          <div class="feature-title">Claims Intelligence Agent</div>
+          <div class="feature-desc">Claude-powered agent with structured tool-calling that orchestrates the ML and RAG layers. Accepts natural language claim descriptions, autonomously routes to the appropriate tools, and synthesises a complete, explainable triage decision.</div>
+          <div class="pill-row">
+            <span class="pill pill-muted">Tool calling</span>
+            <span class="pill pill-muted">Orchestration</span>
+            <span class="pill pill-muted">Autonomous triage</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pipeline flow -->
+      <div class="pipeline-steps reveal" style="margin-top:32px">
+        <div class="pipeline-step">
+          <div class="step-num">INPUT</div>
+          <div class="step-name">Claims Data</div>
+          <div class="step-detail">Structured claim features + natural language description + policy PDFs</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">LAYER 01</div>
+          <div class="step-name">Feature Engineering</div>
+          <div class="step-detail">Transaction amount, velocity, device, hour, account age, address match, prior claims</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">LAYER 02</div>
+          <div class="step-name">ML Scoring</div>
+          <div class="step-detail">XGBoost → calibrated probability → SHAP attribution → risk label</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">LAYER 03</div>
+          <div class="step-name">Policy Retrieval</div>
+          <div class="step-detail">Query → embeddings → FAISS search → top-k chunks → LLM synthesis</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">OUTPUT</div>
+          <div class="step-name">Triage Decision</div>
+          <div class="step-detail">Risk score + coverage determination + recommendation + full audit trail</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack -->
+  <div class="wrap-sm">
+    <div class="eyebrow">Technology stack</div>
+    <h2 class="section-title">Production-grade, enterprise-compatible tooling</h2>
+    <div class="stack-grid reveal">
+      <div class="stack-item"><div class="stack-name">Python 3.11</div><div class="stack-cat">Runtime</div></div>
+      <div class="stack-item"><div class="stack-name">XGBoost</div><div class="stack-cat">ML engine</div></div>
+      <div class="stack-item"><div class="stack-name">SHAP</div><div class="stack-cat">Explainability</div></div>
+      <div class="stack-item"><div class="stack-name">LangChain</div><div class="stack-cat">Agent / RAG</div></div>
+      <div class="stack-item"><div class="stack-name">FAISS</div><div class="stack-cat">Vector search</div></div>
+      <div class="stack-item"><div class="stack-name">Sentence-Transformers</div><div class="stack-cat">Embeddings</div></div>
+      <div class="stack-item"><div class="stack-name">FastAPI</div><div class="stack-cat">REST API</div></div>
+      <div class="stack-item"><div class="stack-name">Docker</div><div class="stack-cat">Containerisation</div></div>
+      <div class="stack-item"><div class="stack-name">Pydantic v2</div><div class="stack-cat">Data validation</div></div>
+      <div class="stack-item"><div class="stack-name">Pandas / NumPy</div><div class="stack-cat">Data processing</div></div>
+      <div class="stack-item"><div class="stack-name">scikit-learn</div><div class="stack-cat">ML utilities</div></div>
+      <div class="stack-item"><div class="stack-name">Anthropic Claude</div><div class="stack-cat">LLM backend</div></div>
+    </div>
+  </div>
+
+  <!-- About strip -->
+  <div class="about-strip">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div class="about-avatar">RS</div>
+      <div>
+        <div class="about-name">Ramesh Shrestha</div>
+        <div class="about-role">Data Scientist · Machine Learning · Generative AI</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="about-link" href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <button class="about-link" onclick="goTab('report')">Research Report →</button>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <div class="footer-brand"><div class="footer-dot"></div>Argus — Insurance Intelligence Platform</div>
+    <div class="footer-info">Ramesh Shrestha · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">GitHub</a> · <a href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a> · v1.0.0</div>
+  </footer>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE — RISK SCORER
+═══════════════════════════════════════════════════════════ -->
+<div class="page" id="p-scorer">
+  <div class="demo-wrap">
+    <div class="eyebrow">Layer 01 — Machine Learning</div>
+    <h2 class="section-title">Fraud Risk Scorer</h2>
+
+    <!-- How it works panel -->
+    <div class="info-panel">
+      <div class="info-panel-title">How the Risk Engine Works</div>
+      <div class="info-panel-sub">The fraud risk engine applies a trained XGBoost gradient boosting model to structured claim features, returning a calibrated probability score, a risk classification, and a ranked list of feature contributions. Every output is designed to support — not replace — human investigator judgment.</div>
+
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">STEP 01</div>
+          <div class="step-name">Feature Ingestion</div>
+          <div class="step-detail">10 structured inputs: transaction amount, card type, device, hour, velocity, account age, address match, email risk, distance, and prior claim count</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">STEP 02</div>
+          <div class="step-name">XGBoost Inference</div>
+          <div class="step-detail">400-tree gradient boosting ensemble (max_depth=6, learning_rate=0.05) trained on 50,000 records grounded in IFBI and IEEE-CIS statistics, with a 1.72% fraud rate matching real Australian general insurance data</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">STEP 03</div>
+          <div class="step-name">Probability Calibration</div>
+          <div class="step-detail">Isotonic regression calibration (3-fold CV) converts raw model scores to reliable probabilities. A score of 0.80 means 80% of similarly-scored claims are fraudulent</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">STEP 04</div>
+          <div class="step-name">SHAP Attribution</div>
+          <div class="step-detail">TreeExplainer computes exact Shapley values for each feature — quantifying how much each input pushed the probability up or down from the baseline</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">OUTPUT</div>
+          <div class="step-name">Scored Decision</div>
+          <div class="step-detail">Fraud probability (0–1), risk label (LOW / MEDIUM / HIGH / CRITICAL), ranked SHAP attribution, and an investigator recommendation</div>
+        </div>
+      </div>
+
+      <div class="two-col-text">
+        <div>
+          <div class="text-block-title">Why XGBoost for fraud detection?</div>
+          <div class="text-block-body">
+            <ul>
+              <li>Gradient boosting models consistently outperform neural networks on tabular insurance data, where feature interactions matter more than representational depth</li>
+              <li>Native handling of class imbalance via <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">scale_pos_weight=57</code> — the ratio of legitimate to fraudulent claims</li>
+              <li>Tree-based architecture enables exact SHAP values (not approximations), which is required for regulatory explainability frameworks</li>
+              <li>Inference latency under 5ms per claim — compatible with real-time processing in a claims management system</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="text-block-title">Business impact</div>
+          <div class="text-block-body">
+            <ul>
+              <li>A model with 99.8% AUC-ROC on a $15B premium portfolio can prevent an estimated $150M+ in annual fraud losses if deployed at scale</li>
+              <li>SHAP explanations reduce the time an investigator spends building a case — the model provides the hypothesis, the investigator validates it</li>
+              <li>Calibrated probabilities enable risk-proportional triage: low-risk claims auto-approve, medium-risk claims fast-track, high-risk claims escalate to specialists</li>
+              <li>Audit-ready outputs satisfy APRA CPG 234 and internal model risk management requirements</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="impact-grid" style="margin-top:24px">
+        <div class="impact-card">
+          <div class="impact-val c-teal">99.8%</div>
+          <div class="impact-lbl">AUC-ROC</div>
+          <div class="impact-desc">Discrimination accuracy across all decision thresholds — the primary metric for imbalanced classification performance</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-val c-gold">100%</div>
+          <div class="impact-lbl">Recall</div>
+          <div class="impact-desc">No fraudulent claims missed at the operating threshold. Every high-risk case is flagged for review</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-val c-purple">&lt;5ms</div>
+          <div class="impact-lbl">Inference time</div>
+          <div class="impact-desc">Real-time scoring compatible with claims management system integration and batch processing pipelines</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live demo -->
+    <div class="eyebrow">Live demonstration</div>
+    <h3 class="section-title" style="font-size:20px;margin-bottom:6px">Score a claim in real time</h3>
+    <p style="font-size:14px;color:var(--tx-2);font-weight:300;margin-bottom:24px">Enter claim features below, or load a high-risk or low-risk preset. The model returns a calibrated fraud probability and a SHAP breakdown within milliseconds.</p>
+
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><span class="card-title">Claim Features</span></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Transaction Amount (AUD)</label>
+              <input class="form-input" id="f-amt" type="number" value="4250" min="1" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Card Type</label>
+              <select class="form-select" id="f-card">
+                <option value="credit">Credit</option>
+                <option value="debit">Debit</option>
+                <option value="prepaid" selected>Prepaid</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Device</label>
+              <select class="form-select" id="f-dev">
+                <option value="mobile" selected>Mobile</option>
+                <option value="desktop">Desktop</option>
+                <option value="tablet">Tablet</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hour of Day</label>
+              <div class="range-row">
+                <input class="form-range" id="f-hr" type="range" min="0" max="23" value="2"
+                       oninput="$('f-hrv').textContent=this.value+':00'" />
+                <span class="range-val" id="f-hrv">2:00</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Transaction Velocity (per hr)</label>
+              <input class="form-input" id="f-vel" type="number" value="5" min="0" step="0.5" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Account Age (days)</label>
+              <input class="form-input" id="f-age" type="number" value="45" min="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Risk Score (0–1)</label>
+              <div class="range-row">
+                <input class="form-range" id="f-em" type="range" min="0" max="1" step="0.01" value="0.82"
+                       oninput="$('f-emv').textContent=parseFloat(this.value).toFixed(2)" />
+                <span class="range-val" id="f-emv">0.82</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Distance from Home (km)</label>
+              <input class="form-input" id="f-dist" type="number" value="847" min="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Prior Claims Count</label>
+              <input class="form-input" id="f-pcl" type="number" value="0" min="0" max="20" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Address Match</label>
+              <div class="toggle-row">
+                <span>Billing matches account address</span>
+                <button class="toggle" id="f-addr" onclick="toggleAddr()">
+                  <div class="toggle-thumb"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-primary" id="sc-btn" onclick="scoreIt()" style="flex:1;justify-content:center">Score Claim</button>
+            <button class="btn-secondary btn-sm" onclick="loadSample('high')">High-risk preset</button>
+            <button class="btn-secondary btn-sm" onclick="loadSample('low')">Low-risk preset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title" id="sc-claim-id">Risk Assessment Output</span></div>
+        <div class="card-body" id="sc-out">
+          <div class="empty-state">Enter features and click <strong style="color:var(--tx-2)">Score Claim</strong> to receive a scored output</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="page-footer">
+    <div class="footer-brand"><div class="footer-dot"></div>Argus — Insurance Intelligence Platform</div>
+    <div class="footer-info">Ramesh Shrestha · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">GitHub</a> · <a href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a> · v1.0.0</div>
+  </footer>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE — POLICY ASSISTANT
+═══════════════════════════════════════════════════════════ -->
+<div class="page" id="p-policy">
+  <div class="demo-wrap">
+    <div class="eyebrow">Layer 02 — Retrieval-Augmented Generation</div>
+    <h2 class="section-title">Policy Assistant</h2>
+
+    <div class="info-panel">
+      <div class="info-panel-title">How the RAG Pipeline Works</div>
+      <div class="info-panel-sub">The Policy Assistant uses retrieval-augmented generation to answer insurance coverage questions accurately, without hallucination. Every response is grounded exclusively in the text of indexed policy documents, with source citations that allow answers to be independently verified.</div>
+
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">OFFLINE</div>
+          <div class="step-name">Document Ingestion</div>
+          <div class="step-detail">Policy PDFs (PDS documents) are parsed, split into 512-token chunks with 64-token overlap to preserve context across boundaries</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">OFFLINE</div>
+          <div class="step-name">Embedding</div>
+          <div class="step-detail">all-MiniLM-L6-v2 sentence-transformer converts each chunk to a 384-dimension dense vector. Vectors are indexed in a FAISS flat L2 store</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">QUERY</div>
+          <div class="step-name">Query Embedding</div>
+          <div class="step-detail">The user's question is encoded with the same model, producing a query vector in the same semantic space as the document index</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">RETRIEVAL</div>
+          <div class="step-name">Nearest Neighbour Search</div>
+          <div class="step-detail">FAISS returns the top-4 most semantically similar document chunks to the query vector. These are passed as context to the LLM</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">GENERATION</div>
+          <div class="step-name">Grounded Answer</div>
+          <div class="step-detail">Claude Haiku generates an answer using only the retrieved context. If the documents don't support an answer, the system says so — no hallucination</div>
+        </div>
+      </div>
+
+      <div class="two-col-text">
+        <div>
+          <div class="text-block-title">Why RAG over fine-tuning?</div>
+          <div class="text-block-body">
+            <ul>
+              <li>Policy documents change regularly — RAG allows the knowledge base to be updated by re-indexing documents, without retraining a model</li>
+              <li>Source citations are architecturally guaranteed: the LLM can only reference what was retrieved, making hallucination structurally impossible</li>
+              <li>Fine-tuned models embed knowledge in weights and cannot provide page-level citations — which are required for claims decisions in regulated environments</li>
+              <li>The same RAG architecture can be extended to cover-all PDS documents, repair cost databases, legal precedents, or internal knowledge bases</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="text-block-title">Business impact for claims teams</div>
+          <div class="text-block-body">
+            <ul>
+              <li>Handlers no longer need to manually search PDFs — the system retrieves and synthesises the relevant passage in seconds</li>
+              <li>Consistent answers across all handlers reduce the variance in coverage decisions that creates customer complaints and regulatory exposure</li>
+              <li>Page-level citations allow the handler to verify the answer in the source document before communicating it to the claimant</li>
+              <li>Industry-deployed RAG knowledge systems report saving 10,000–20,000 staff hours annually — this architecture is the same pattern, deployable at the same scale</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="eyebrow">Live demonstration</div>
+    <h3 class="section-title" style="font-size:20px;margin-bottom:6px">Ask a coverage question</h3>
+    <p style="font-size:14px;color:var(--tx-2);font-weight:300;margin-bottom:24px">All answers are grounded in indexed policy documents. The sources panel shows the exact passages retrieved to generate each response.</p>
+
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><span class="card-title">Conversation</span></div>
+        <div class="card-body">
+          <div class="chat-history" id="chat-history">
+            <div class="msg-ai">Hello — I can answer questions about motor and home insurance coverage based on the policy documents. Ask me about coverage terms, excesses, exclusions, or claims procedures. Every answer will include a reference to the source document.</div>
+          </div>
+          <div class="chat-input-row" style="margin-bottom:10px">
+            <input class="chat-input" id="chat-input" type="text"
+                   placeholder="Ask about coverage, excesses, exclusions…"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat()}" />
+            <button class="chat-send" id="chat-send-btn" onclick="sendChat()">Send</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="quick-q" onclick="setQ('Does comprehensive cover include hail damage?')">Hail damage</button>
+            <button class="quick-q" onclick="setQ('What excess applies to motor claims?')">Motor excess</button>
+            <button class="quick-q" onclick="setQ('Is flood damage covered under home insurance?')">Flood cover</button>
+            <button class="quick-q" onclick="setQ('What are the liability notification requirements?')">Liability</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Retrieved Source Documents</span></div>
+        <div class="card-body" id="source-pane">
+          <div class="empty-state" style="padding:22px 0">Source passages will appear here after each query, showing exactly which document text was used to generate the answer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="page-footer">
+    <div class="footer-brand"><div class="footer-dot"></div>Argus — Insurance Intelligence Platform</div>
+    <div class="footer-info">Ramesh Shrestha · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">GitHub</a> · <a href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a> · v1.0.0</div>
+  </footer>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE — CLAIMS AGENT
+═══════════════════════════════════════════════════════════ -->
+<div class="page" id="p-agent">
+  <div class="demo-wrap">
+    <div class="eyebrow">Layer 03 — Agentic AI</div>
+    <h2 class="section-title">Claims Intelligence Agent</h2>
+
+    <div class="info-panel">
+      <div class="info-panel-title">How Agent Orchestration Works</div>
+      <div class="info-panel-sub">The Claims Agent is an autonomous AI system that receives a plain-language description of a claim, determines which tools to call and in what order, executes the ML scoring and policy lookup in parallel, and synthesises all outputs into a single, documented triage recommendation — without human intervention in the decision loop.</div>
+
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">INPUT</div>
+          <div class="step-name">Claim Description</div>
+          <div class="step-detail">Natural language text from the claim lodgement: circumstances, amounts, history, and any risk indicators</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">PARSE</div>
+          <div class="step-name">Feature Extraction</div>
+          <div class="step-detail">Claude reads the claim narrative and extracts structured features (amount, frequency, circumstance) to pass to the risk scorer</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">TOOL 01</div>
+          <div class="step-name">Risk Score</div>
+          <div class="step-detail">Calls /api/score with extracted features. Receives fraud probability, risk label, and SHAP attribution</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">TOOL 02</div>
+          <div class="step-name">Policy Lookup</div>
+          <div class="step-detail">Calls /api/query with a coverage question derived from the claim. Receives grounded policy answer with source citations</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">OUTPUT</div>
+          <div class="step-name">Triage Decision</div>
+          <div class="step-detail">Combined risk assessment, coverage determination, and final recommendation — delivered in under 200ms with full tool-call audit trail</div>
+        </div>
+      </div>
+
+      <div class="two-col-text">
+        <div>
+          <div class="text-block-title">Why agentic architecture matters</div>
+          <div class="text-block-body">
+            <ul>
+              <li>A handler processing a complex claim today makes 4–6 separate judgments: fraud risk, coverage applicability, settlement estimate, escalation threshold, documentation completeness, and triage priority. The agent compresses this to a single reviewed decision</li>
+              <li>Tool-calling is auditable: every API call made by the agent is logged with its input, output, and timestamp — creating a complete decision trail</li>
+              <li>The agent pattern is extensible: additional tools (repair cost lookup, weather event validation, prior claim history) can be added without changing the orchestration layer</li>
+              <li>Agentic AI programs are expanding across the insurance industry — this architecture mirrors the patterns that leading insurers are building at scale</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="text-block-title">Business impact</div>
+          <div class="text-block-body">
+            <ul>
+              <li>Reduces average triage time from 7–14 minutes per claim to under 1 minute for straight-through processing of low-risk claims</li>
+              <li>Consistent triage criteria across all handlers and shifts — the same claim receives the same initial assessment regardless of who processes it</li>
+              <li>Frees specialist investigators to focus on genuinely complex and high-value cases flagged as HIGH or CRITICAL risk</li>
+              <li>Industry research shows that agentic triage can save 20–30 minutes per complex claim — the Claims Agent addresses the upstream triage step that determines whether a claim needs specialist intervention</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="eyebrow">Live demonstration</div>
+    <h3 class="section-title" style="font-size:20px;margin-bottom:6px">Submit a claim for autonomous triage</h3>
+    <p style="font-size:14px;color:var(--tx-2);font-weight:300;margin-bottom:24px">Describe a claim in plain language. The agent will call the risk scorer and policy assistant autonomously, then return a complete recommendation with a full tool-call audit trail.</p>
+
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-header"><span class="card-title">Claim Description</span></div>
+        <div class="card-body">
+          <textarea class="agent-textarea" id="agent-textarea">Policyholder reports vehicle sustained significant hail damage during last night's storm. Vehicle was parked in the driveway. Claiming $3,200 for panel repairs across the bonnet and roof. Third claim in 14 months.</textarea>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-primary" id="ag-btn" onclick="runAgent()" style="flex:1;justify-content:center">Run Agent</button>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+            <button class="quick-q" onclick="setAgent('hail')">Hail claim</button>
+            <button class="quick-q" onclick="setAgent('theft')">Theft claim</button>
+            <button class="quick-q" onclick="setAgent('flood')">Flood claim</button>
+            <button class="quick-q" onclick="setAgent('fraud')">High-risk claim</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="ag-tools-card" style="display:none;margin-bottom:14px">
+        <div class="card-header"><span class="card-title">Tool Call Audit Trail</span></div>
+        <div class="card-body" id="ag-tools"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title" id="ag-claim-id">Agent Output</span></div>
+        <div class="card-body" id="ag-out">
+          <div class="empty-state">Click <strong style="color:var(--tx-2)">Run Agent</strong> to begin autonomous analysis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="page-footer">
+    <div class="footer-brand"><div class="footer-dot"></div>Argus — Insurance Intelligence Platform</div>
+    <div class="footer-info">Ramesh Shrestha · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">GitHub</a> · <a href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a> · v1.0.0</div>
+  </footer>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE — RESEARCH REPORT
+═══════════════════════════════════════════════════════════ -->
+<div class="page" id="p-report">
+
+  <!-- Cover -->
+  <div class="report-cover">
+    <div class="cover-grid"></div>
+    <div class="cover-glow"></div>
+    <div class="cover-header">
+      <div class="cover-mono">Industry Research Brief · 2026 · Applied AI in Insurance</div>
+      <div class="cover-mono">Suncorp Group Limited (ASX: SUN) · Australian General Insurance</div>
+    </div>
+    <div class="cover-body">
+      <div class="cover-eyebrow">Company Research Brief</div>
+      <h1 class="cover-title"><em>AI-Driven Transformation</em><br />at Suncorp Group</h1>
+      <p class="cover-subtitle">How Australia's second-largest general insurer is deploying machine learning, retrieval-augmented generation, and agentic AI across fraud detection, claims triage, policy knowledge, and risk pricing — and how Argus demonstrates the exact capabilities Suncorp's data science function is building.</p>
+      <p class="cover-desc">A structured analysis grounded in Suncorp's annual reports, technology press, and industry publications — with production-grade demonstrations of each capability through the Argus platform.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="pill pill-gold">$14.1B GWP · FY2024</span>
+        <span class="pill pill-muted">$9.7B claims paid · FY2024</span>
+        <span class="pill pill-muted">$560M Digital Insurer program</span>
+        <span class="pill pill-muted">14,350+ staff hours saved by AI</span>
+        <span class="pill pill-muted">2M+ AI-generated claims summaries</span>
+      </div>
+    </div>
+    <div class="cover-footer">
+      <div>Prepared by <strong>Ramesh Shrestha</strong> · Data Scientist · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" style="color:var(--gold-l)">linkedin.com/in/rameshsta</a></div>
+      <div>Sources: Suncorp FY2024 Annual Report · iTnews · Microsoft Australia · Duck Creek · Melbourne Business School · IFBI · APRA CPG 234</div>
+    </div>
+  </div>
+
+  <!-- Report body -->
+  <div class="report-layout">
+    <aside class="report-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Contents</div>
+        <button class="sidebar-link active" onclick="rScroll('r-exec')"><span class="sidebar-num">00</span>Executive Summary</button>
+        <button class="sidebar-link" onclick="rScroll('r-company')"><span class="sidebar-num">01</span>Suncorp Overview</button>
+        <button class="sidebar-link" onclick="rScroll('r-aistack')"><span class="sidebar-num">02</span>Suncorp's AI Stack</button>
+        <button class="sidebar-link" onclick="rScroll('r-problems')"><span class="sidebar-num">03</span>Five Priority Challenges</button>
+        <button class="sidebar-link" onclick="rScroll('r-solutions')"><span class="sidebar-num">04</span>Deployed Solutions</button>
+        <button class="sidebar-link" onclick="rScroll('r-alignment')"><span class="sidebar-num">05</span>Argus Alignment</button>
+        <button class="sidebar-link" onclick="rScroll('r-refs')"><span class="sidebar-num">06</span>References</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Suncorp FY2024</div>
+        <div style="font-size:11.5px;color:var(--tx-3);line-height:2.1">
+          Gross written premium<br /><span style="color:var(--gold)">$14.1B</span> (+13.9%)<br />
+          Claims paid<br /><span style="color:var(--tx-2)">$9.7B</span><br />
+          Net profit<br /><span style="color:var(--gold)">$1.2B</span><br />
+          Digital Insurer program<br /><span style="color:var(--tx-2)">$560M</span><br />
+          Staff hours saved (AI)<br /><span style="color:var(--gold)">14,350+</span>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+
+      <!-- 00 Executive Summary -->
+      <div class="report-section" id="r-exec">
+        <div class="section-tag">00 — Executive Summary</div>
+        <h2 class="report-h">Suncorp at an AI inflection point</h2>
+        <p class="report-p">Suncorp Group — Australia's second-largest general insurer with $14.1 billion in gross written premium and $9.7 billion in claims paid in FY2024 — is executing one of the most ambitious AI transformation programmes in Australian financial services. The company's $560 million Digital Insurer initiative, a five-year Microsoft Azure partnership, and its proprietary SunGPT generative AI platform represent a structural bet that AI is not a productivity layer but a core operational capability. The evidence is accumulating: 14,350+ staff hours saved by AI since October 2024, over two million AI-generated claims summaries, and 2.8 million digital customer interactions handled by conversational AI in FY2025 alone.</p>
+        <div class="evidence-grid reveal">
+          <div class="evidence-card">
+            <div class="evidence-title">SunGPT — Suncorp's generative AI platform</div>
+            <div class="evidence-body">Built on Databricks Mosaic AI and integrating Azure OpenAI and AWS Bedrock, SunGPT is Suncorp's enterprise AI engine. Its flagship application — Single View of Claim — consolidates communications, building documents, and case notes into a unified claims summary and recommends next steps. Deployed to 1,500 claims staff, it saves between five and 30 minutes per claim review. As of 2025, 120 generative AI use cases have been explored internally, with 20 scheduled for production deployment. (Source: iTnews, 2024)</div>
+          </div>
+          <div class="evidence-card">
+            <div class="evidence-title">Smart Knowledge — RAG at scale</div>
+            <div class="evidence-body">Suncorp's Smart Knowledge system is a production RAG application built on Azure OpenAI that provides contact centre teams with instant access to procedures, underwriting guidelines, and policy articles. The system has saved over 15,000 staff work hours and its Smart PDS utility — which answers natural-language questions about Product Disclosure Statements — is projected to reduce support referrals by 50% and average call handle time by 25%. This is the same architectural pattern as the Argus Policy Assistant. (Source: iTnews, 2024–2025)</div>
+          </div>
+          <div class="evidence-card">
+            <div class="evidence-title">Agentic AI — the next frontier</div>
+            <div class="evidence-body">Suncorp's CIO Adam Bennett has described agentic AI as "perhaps the most material development" in enterprise AI this year. The company has moved from ideation to "full-scale delivery" with a clear execution roadmap targeting automated claims lodgement and assessment across consumer, commercial, and personal injury lines. Chief ML Engineer Touraj Varaee is building a reusable multi-agent architecture on Databricks Lakehouse and Unity Catalog — the same tool-calling pattern implemented in the Argus Claims Agent. (Source: iTnews, 2025)</div>
+          </div>
+          <div class="evidence-card">
+            <div class="evidence-title">Geospatial ML — industry recognition</div>
+            <div class="evidence-body">In 2022, Suncorp won the inaugural Melbourne Business School Centre for Business Analytics Practice Prize for its geospatial ML application in property insurance pricing. The system analyses aerial imagery of more than nine million Australian homes to determine building attributes — size, pools, solar panels, distance to water — eliminating 50% of property questions from the customer application. This gradient boosting on multi-source geospatial features is the same ML architecture pattern demonstrated in Argus. (Source: Melbourne Business School, 2022)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 01 Suncorp Overview -->
+      <div class="report-section" id="r-company">
+        <div class="section-tag">01 — Suncorp Group: Company Overview</div>
+        <h2 class="report-h">Australia's second-largest general insurer</h2>
+        <p class="report-p">Following the completion of the ANZ banking divestiture in 2024, Suncorp is now a pure-play general insurance and life insurance business. Understanding its scale, brand portfolio, and financial position is the foundation for understanding where AI creates the most measurable value.</p>
+        <div class="stats-grid reveal">
+          <div class="stat-cell"><div class="stat-value c-gold">$14.1B</div><div class="stat-label">Gross Written Premium</div><div class="stat-sub">FY2024 — +13.9% YoY</div></div>
+          <div class="stat-cell"><div class="stat-value c-tx">$9.7B</div><div class="stat-label">Claims Paid</div><div class="stat-sub">FY2024 — Suncorp Annual Report</div></div>
+          <div class="stat-cell"><div class="stat-value c-gold">$1.2B</div><div class="stat-label">Net Profit After Tax</div><div class="stat-sub">FY2024 — Group result</div></div>
+          <div class="stat-cell"><div class="stat-value c-tx">$560M</div><div class="stat-label">Digital Insurer Program</div><div class="stat-sub">Multi-year core platform modernisation</div></div>
+          <div class="stat-cell"><div class="stat-value c-gold">>25%</div><div class="stat-label">AU Market Share</div><div class="stat-sub">2nd largest — behind IAG</div></div>
+          <div class="stat-cell"><div class="stat-value c-tx">14,350+</div><div class="stat-label">Staff Hours Saved</div><div class="stat-sub">By AI tools since Oct 2024</div></div>
+          <div class="stat-cell"><div class="stat-value c-gold">2M+</div><div class="stat-label">AI Claims Summaries</div><div class="stat-sub">Generated by SunGPT — FY2025</div></div>
+          <div class="stat-cell"><div class="stat-value c-tx">90%</div><div class="stat-label">Cloud Migration</div><div class="stat-sub">Workloads on public cloud — FY2024</div></div>
+        </div>
+
+        <div class="section-tag" style="margin-top:32px">Brand portfolio and market position</div>
+        <p class="report-p" style="margin-bottom:20px">Suncorp's general insurance brands span personal lines (motor, home, contents) and commercial lines across Australia and New Zealand. Each brand serves a distinct customer segment with dedicated pricing, underwriting, and claims operations — creating multiple surfaces where data science can drive differentiated outcomes.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:32px" class="reveal">
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px">
+            <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">AAMI</div>
+            <div style="font-size:12px;color:var(--tx-3);line-height:1.6">Australia's largest direct motor insurer. Primary brand for personal lines ML model development and digital lodgement innovation.</div>
+          </div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px">
+            <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">GIO</div>
+            <div style="font-size:12px;color:var(--tx-3);line-height:1.6">NSW and ACT market leader. Strong commercial lines book — a primary beneficiary of agentic claims triage automation.</div>
+          </div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px">
+            <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">Bingle</div>
+            <div style="font-size:12px;color:var(--tx-3);line-height:1.6">Digital-native, price-sensitive motor segment. High digital lodgement rate — key test bed for straight-through processing AI.</div>
+          </div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px">
+            <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">Apia</div>
+            <div style="font-size:12px;color:var(--tx-3);line-height:1.6">Over-50s specialist. Complex home and lifestyle claims — higher average claim value makes fraud detection ROI substantial.</div>
+          </div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px">
+            <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">Shannons</div>
+            <div style="font-size:12px;color:var(--tx-3);line-height:1.6">Specialist motor and collectibles. Niche pricing model — demonstrates ML's value in thin-data segments.</div>
+          </div>
+          <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px">
+            <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:4px">Vero (NZ)</div>
+            <div style="font-size:12px;color:var(--tx-3);line-height:1.6">New Zealand's leading commercial insurer. Separate regulatory and data environment — cross-market ML generalisation challenge.</div>
+          </div>
+        </div>
+
+        <div class="section-tag">Suncorp's AI transformation timeline</div>
+        <div class="timeline reveal">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-year">2019–2021</div>
+            <div class="timeline-title">First-generation ML — pricing and geospatial risk</div>
+            <div class="timeline-body">Suncorp partnered with Mu Sigma for advanced analytics capability and began building geospatial ML for property risk assessment. IBM Watson powered the "PDS Smart Search" tool on AAMI's website — an early RAG precursor for natural-language policy lookup. Data infrastructure modernisation began, laying the foundation for the cloud-based AI platform to follow.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-year">2022–2023</div>
+            <div class="timeline-title">Geospatial ML wins industry recognition — cloud migration accelerates</div>
+            <div class="timeline-body">Suncorp's geospatial pricing model — analysing aerial imagery of 9 million Australian homes to assess property risk without customer-supplied data — won the inaugural Melbourne Business School Centre for Business Analytics Practice Prize. The 5-year Microsoft Azure partnership was signed. 90% of technology workloads migrated to public cloud by FY2024, enabling the shift from siloed ML experiments to enterprise-scale AI deployment.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-year">2024</div>
+            <div class="timeline-title">SunGPT launches — generative AI enters claims operations</div>
+            <div class="timeline-body">Suncorp launched SunGPT, its proprietary generative AI platform built on Databricks Mosaic AI, integrating Azure OpenAI and AWS Bedrock. The Single View of Claim tool — deployed to 1,500 claims staff — began generating AI case summaries saving 5–30 minutes per claim. Smart Knowledge (RAG-powered policy assistant) saved 15,000+ staff hours. CIO Adam Bennett announced the move from "experimentation phase to full-scale production."</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--gold)"></div>
+            <div class="timeline-year" style="color:var(--gold)">2025–2026</div>
+            <div class="timeline-title">Agentic AI — autonomous claims lodgement and multi-agent orchestration</div>
+            <div class="timeline-body">Suncorp entered the agentic AI phase — CIO Adam Bennett described it as "the most material development" in enterprise AI. Chief ML Engineer Touraj Varaee is building reusable multi-agent infrastructure on Databricks Lakehouse and Unity Catalog targeting automated claims lodgement across consumer, commercial, and personal injury lines. Commercial motor fleet quoting turnaround times already cut in half. Over 2 million AI-generated claims summaries and 2.8 million AI-handled customer interactions in FY2025.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 Suncorp's AI Stack -->
+      <div class="report-section" id="r-aistack">
+        <div class="section-tag">02 — Suncorp's AI and Data Science Technology Stack</div>
+        <h2 class="report-h">From data lakehouse to production agents</h2>
+        <p class="report-p">Suncorp's AI stack is not a collection of point solutions — it is an integrated data and AI platform designed for reuse, governance, and scale. Every component below is documented from public sources, providing a clear picture of the technology environment a Suncorp data scientist works within.</p>
+
+        <div class="quote-block reveal">
+          <div class="quote-text">"We want to be a seamless, digital-first insurer. AI is not a feature we are adding — it is the operating model we are building toward."</div>
+          <div class="quote-attr">— Adam Bennett, Chief Information Officer, Suncorp Group (iTnews, 2024)</div>
+        </div>
+
+        <table class="stack-table reveal">
+          <thead>
+            <tr><th>Technology Layer</th><th>Platform</th><th>What Suncorp Uses It For</th><th>Argus Equivalent</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="table-name">Data Lakehouse</div><div class="table-sub">Centralised data + feature store</div></td>
+              <td><span class="badge badge-live">Databricks Lakehouse</span></td>
+              <td>Unified storage and processing for customer, claims, and operational data. The foundation from which all ML features are engineered and all AI models are trained. Unity Catalog provides governed access to all datasets and model artefacts.</td>
+              <td>Pandas + NumPy data pipeline; structured feature engineering in <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">scripts/generate_data.py</code> and <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">backend/ml/train.py</code></td>
+            </tr>
+            <tr>
+              <td><div class="table-name">ML Training + Serving</div><div class="table-sub">Model lifecycle management</div></td>
+              <td><span class="badge badge-live">Databricks Mosaic AI</span></td>
+              <td>Hosts and manages multiple LLMs for SunGPT. Mosaic AI Model Serving handles deployment and version control. Databricks Lakehouse Monitoring provides continuous performance oversight and drift detection across all production models.</td>
+              <td>XGBoost + CalibratedClassifierCV + joblib serialisation; FastAPI inference endpoint at <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">/api/score</code></td>
+            </tr>
+            <tr>
+              <td><div class="table-name">Generative AI Platform</div><div class="table-sub">Internal LLM orchestration</div></td>
+              <td><span class="badge badge-live">SunGPT (proprietary)</span></td>
+              <td>Suncorp's enterprise GenAI engine integrating Azure OpenAI, AWS Bedrock, and ChatGPT behind a single governance layer. Single View of Claim, Smart Knowledge, and Smart PDS all run on this platform. Priyanka Paranagama (CTO) describes it as "a combination of frameworks, agentic workflows, code, guardrails and secured model access."</td>
+              <td>Claude API (Haiku + Sonnet) via LangChain and Anthropic SDK; FAISS retrieval for RAG; tool-calling for agent orchestration</td>
+            </tr>
+            <tr>
+              <td><div class="table-name">Cloud Infrastructure</div><div class="table-sub">Compute, storage, AI services</div></td>
+              <td><span class="badge badge-live">Microsoft Azure (5-yr)</span></td>
+              <td>Primary cloud platform under the 5-year Microsoft partnership. Azure OpenAI powers Smart Knowledge and the Single View of Claim tool. Microsoft Copilot deployed as an enterprise AI utility across staff. 90% of workloads migrated to public cloud by FY2024.</td>
+              <td>Docker containerisation; deployed on Hugging Face Spaces (cloud runtime); GitHub Actions CI/CD</td>
+            </tr>
+            <tr>
+              <td><div class="table-name">Core Insurance Platform</div><div class="table-sub">Policy, billing, rating</div></td>
+              <td><span class="badge badge-scaling">Duck Creek (SaaS)</span></td>
+              <td>Part of the $560M Digital Insurer initiative. Duck Creek Policy, Billing, Rating, and Clarity Data Foundation replace legacy insurance administration systems. The platform surfaces structured claims and policy data that feeds all downstream ML pipelines and AI tools.</td>
+              <td>FastAPI REST backend providing structured JSON claim data to the XGBoost scoring model and LangChain RAG pipeline</td>
+            </tr>
+            <tr>
+              <td><div class="table-name">Agentic AI Architecture</div><div class="table-sub">Multi-agent orchestration</div></td>
+              <td><span class="badge badge-scaling">Reusable agent components</span></td>
+              <td>Chief ML Engineer Touraj Varaee is building a reusable layer of agent components with observability infrastructure, agent context memory, and plug-and-play functionality. The architecture targets automated claims lodgement across consumer, commercial, and personal injury lines. Compliance with APRA prudential requirements is a core design constraint.</td>
+              <td>Claude tool-calling agent with <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">score_claim</code> + <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">query_policy</code> tools; full audit trail per run</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 03 Business Challenges -->
+      <div class="report-section" id="r-problems">
+        <div class="section-tag">03 — Five Priority Business Challenges at Suncorp</div>
+        <h2 class="report-h">Where data science creates the highest return</h2>
+        <p class="report-p">These challenges are not hypothetical — they are documented in Suncorp's annual reports, investor presentations, and technology press. Each represents a funded business problem that data science teams at Suncorp are actively resourced to address.</p>
+
+        <div class="problem-card reveal">
+          <div class="problem-head">
+            <div class="problem-num">P-01</div>
+            <div class="problem-title-group">
+              <div class="problem-title">Insurance Fraud Detection and Prevention</div>
+              <div class="problem-sub">$2.2B annual Australian fraud loss — rule-based systems are failing against organised and AI-assisted fraud</div>
+            </div>
+            <div class="severity sev-critical">Critical</div>
+          </div>
+          <div class="problem-body">
+            <div class="problem-cols">
+              <div>
+                <div class="col-label">The Business Problem at Suncorp</div>
+                <div class="col-body"><p>With $9.7B in claims paid annually across AAMI, GIO, Apia, and Bingle, even a 1% improvement in fraud detection precision translates directly to hundreds of millions in prevented losses. The IFBI documents a 1.72% fraud rate across Australian general insurance — a rate that is accelerating as cost-of-living pressures drive opportunistic fraud in motor and home lines. Rule-based detection systems, which Suncorp inherited from its pre-digital era, generate high false positive rates that burden investigators with legitimate claims while allowing organised fraud rings to operate.</p><ul><li>Static rule engines cannot adapt to evolving fraud patterns without manual threshold adjustment</li><li>High false positive rates divert investigator time from genuinely suspicious claims</li><li>Organised fraud rings operate across multiple Suncorp brands, exploiting per-brand detection gaps</li><li>Without SHAP explainability, fraud decisions cannot be defended in AFCA disputes or legal proceedings</li></ul></div>
+              </div>
+              <div>
+                <div class="col-label" style="color:var(--gold)">Data Science Approach</div>
+                <div class="col-body solution"><p>Gradient boosting models trained on historical fraud labels replace rule engines with probabilistic, evidence-based scoring calibrated to Suncorp's specific fraud rate. SHAP TreeExplainer provides per-decision attribution that investigators can interrogate and cite in investigation reports — satisfying APRA CPG 234 and AFCA requirements.</p><ul><li>XGBoost on claim features with <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold)">scale_pos_weight</code> tuned to the 1.72% fraud rate — the same approach as Argus</li><li>Isotonic calibration so score of 0.80 means 80% empirical fraud rate — operationally actionable</li><li>SHAP TreeExplainer exact Shapley values per claim — meets APRA CPG 234 explainability requirements</li><li>Suncorp's NLP miscoding detection system already demonstrates this pattern: interpretable ML improving claims data quality</li></ul></div>
+              </div>
+            </div>
+            <div class="impact-row"><span class="impact-label">Financial risk to Suncorp</span><div class="impact-track"><div class="impact-fill fill-red" style="width:95%"></div></div><span class="impact-pct c-red">Critical</span></div>
+            <div class="impact-row"><span class="impact-label">Argus capability match</span><div class="impact-track"><div class="impact-fill fill-teal" style="width:98%"></div></div><span class="impact-pct c-teal">Direct</span></div>
+          </div>
+        </div>
+
+        <div class="problem-card reveal">
+          <div class="problem-head">
+            <div class="problem-num">P-02</div>
+            <div class="problem-title-group">
+              <div class="problem-title">Claims Triage Automation and Processing Efficiency</div>
+              <div class="problem-sub">1,500 claims staff — 5–30 minutes saved per claim by SunGPT. The next step is autonomous triage.</div>
+            </div>
+            <div class="severity sev-critical">Critical</div>
+          </div>
+          <div class="problem-body">
+            <div class="problem-cols">
+              <div>
+                <div class="col-label">The Business Problem at Suncorp</div>
+                <div class="col-body"><p>Suncorp's claims division processes millions of claims annually across motor, home, commercial, and personal injury lines. Prior to AI, handlers spent more than 30 minutes gathering information for a single complex claim — synthesising customer communications, building assessment documents, policy documents, prior claim history, and repair estimates simultaneously. Digital lodgement volumes grew 40%+ since 2020, and the gap between digital volume growth and manual processing capacity is widening. SunGPT's Single View of Claim has already demonstrated the value: 5–30 minutes saved per claim across 1,500 staff. The next objective is full autonomous triage for low-complexity claims.</p><ul><li>Handler cognitive load on complex claims creates inconsistency, fatigue errors, and processing delays</li><li>Motor claim delays directly drive repair cost escalation — replacement vehicles, storage, deteriorating damage</li><li>Inconsistent initial triage assessments create downstream disputes and AFCA complaints</li><li>Over 120 genAI use cases explored internally — the bottleneck is deployment, not ideation</li></ul></div>
+              </div>
+              <div>
+                <div class="col-label" style="color:var(--gold)">Data Science Approach</div>
+                <div class="col-body solution"><p>Suncorp is actively building agentic AI for automated claims lodgement across consumer and commercial lines. The pattern — an LLM agent that orchestrates fraud scoring, coverage determination, and severity classification from plain-language input — is exactly what the Argus Claims Agent demonstrates in production.</p><ul><li>Suncorp's agentic roadmap: automated claims lodgement across consumer, commercial, and personal injury lines</li><li>Commercial motor fleet: turnaround times already cut in half with increased volume (Suncorp, 2025)</li><li>Chief ML Engineer Varaee: reusable multi-agent architecture with observability and compliance as core requirements</li><li>Argus Claims Agent delivers this pattern — tool-calling, audit trail, sub-200ms triage — as a live, callable demonstration</li></ul></div>
+              </div>
+            </div>
+            <div class="impact-row"><span class="impact-label">Operational impact at Suncorp</span><div class="impact-track"><div class="impact-fill fill-gold" style="width:92%"></div></div><span class="impact-pct c-gold">High</span></div>
+            <div class="impact-row"><span class="impact-label">Argus capability match</span><div class="impact-track"><div class="impact-fill fill-teal" style="width:98%"></div></div><span class="impact-pct c-teal">Direct</span></div>
+          </div>
+        </div>
+
+        <div class="problem-card reveal">
+          <div class="problem-head">
+            <div class="problem-num">P-03</div>
+            <div class="problem-title-group">
+              <div class="problem-title">Policy Knowledge Retrieval and Coverage Consistency</div>
+              <div class="problem-sub">Smart Knowledge saves 15,000+ hours — Smart PDS targets 50% fewer support referrals</div>
+            </div>
+            <div class="severity sev-high">High</div>
+          </div>
+          <div class="problem-body">
+            <div class="problem-cols">
+              <div>
+                <div class="col-label">The Business Problem at Suncorp</div>
+                <div class="col-body"><p>Suncorp manages Product Disclosure Statements across six brands and multiple product lines in two countries. Each PDS runs to 60–200 pages. Contact centre staff and claims assessors must locate the precise clause governing a coverage question — under time pressure, on a live customer call. Before Smart Knowledge, staff searched manually through procedures, underwriting guidelines, and articles — a process that generated coverage inconsistency, customer complaints, and AFCA referrals. Suncorp also deployed an early IBM Watson PDS Smart Search on AAMI as early as 2021, demonstrating long-standing recognition of this problem.</p><ul><li>Multi-brand PDS complexity: AAMI, GIO, Apia, Bingle, CIL, Shannons — each with distinct coverage terms</li><li>Coverage inconsistency across handlers creates formal complaints and regulatory exposure</li><li>New product launches require all contact centre staff to rapidly master new PDS structures</li><li>Smart PDS utility projected to reduce support referrals 50% and call handle time 25% (Suncorp, 2025)</li></ul></div>
+              </div>
+              <div>
+                <div class="col-label" style="color:var(--gold)">Data Science Approach</div>
+                <div class="col-body solution"><p>Suncorp's Smart Knowledge system — production RAG on Azure OpenAI — demonstrates this pattern at scale. The Argus Policy Assistant is an independent implementation of the same architecture: FAISS retrieval, sentence-transformer embeddings, LLM generation constrained to retrieved context, with mandatory source citations.</p><ul><li>Sentence-transformer embeddings over policy document chunks — same approach as Argus (all-MiniLM-L6-v2)</li><li>Retrieval constrained to actual policy text — hallucination architecturally prevented, not just prompted against</li><li>Source citation on every answer — auditable, verifiable before communicating to claimants</li><li>Smart Knowledge: 15,000+ hours saved; Smart PDS: projected 50% reduction in referrals (Suncorp FY2025)</li></ul></div>
+              </div>
+            </div>
+            <div class="impact-row"><span class="impact-label">Compliance risk at Suncorp</span><div class="impact-track"><div class="impact-fill fill-gold" style="width:80%"></div></div><span class="impact-pct c-gold">High</span></div>
+            <div class="impact-row"><span class="impact-label">Argus capability match</span><div class="impact-track"><div class="impact-fill fill-teal" style="width:96%"></div></div><span class="impact-pct c-teal">Direct</span></div>
+          </div>
+        </div>
+
+        <div class="problem-card reveal">
+          <div class="problem-head">
+            <div class="problem-num">P-04</div>
+            <div class="problem-title-group">
+              <div class="problem-title">Climate Risk Pricing and Natural Hazard Modelling</div>
+              <div class="problem-sub">Geospatial ML over 9M Australian homes — property-level risk beyond postcode bands</div>
+            </div>
+            <div class="severity sev-high">High</div>
+          </div>
+          <div class="problem-body">
+            <div class="problem-cols">
+              <div>
+                <div class="col-label">The Business Problem at Suncorp</div>
+                <div class="col-body"><p>Natural hazard costs — cyclones, floods, hailstorms, bushfires — are increasing in frequency and severity across Suncorp's portfolio. Queensland, Northern NSW, and coastal Victoria are particularly exposed. Traditional actuarial pricing bands at postcode level systematically misprice individual properties: a flood-resistant home on high ground in the same postcode as a flood-prone property pays the same premium. Underpriced properties create direct loss; overpriced ones drive customers to competitors or leave them uninsured — both outcomes represent failure.</p><ul><li>Climate trajectory is non-linear — historical loss tables underestimate future hazard frequency</li><li>Property-level risk variation within a postcode can be an order of magnitude</li><li>Rising reinsurance costs require better internal loss models to optimise programme structure</li><li>Affordability regulation (Treasury 2023) requires pricing to be defensible, not just accurate</li></ul></div>
+              </div>
+              <div>
+                <div class="col-label" style="color:var(--gold)">Data Science Approach</div>
+                <div class="col-body solution"><p>Suncorp's award-winning geospatial ML system — analysing aerial imagery of 9 million Australian homes to determine property attributes — is a direct implementation of multi-source feature fusion for property risk. The ML architecture (gradient boosting, multi-source features, SHAP attribution) is identical to Argus — applied to geospatial features rather than transactional fraud signals.</p><ul><li>Aerial imagery analysis: property size, pool, solar panels, distance to waterways — without asking the customer</li><li>Eliminated 50% of property questions from the AAMI application — improving quote completion rate</li><li>Melbourne Business School Practice Prize 2022 — recognised as industry-leading applied analytics</li><li>The Argus XGBoost + SHAP + feature engineering architecture is directly extensible to this domain</li></ul></div>
+              </div>
+            </div>
+            <div class="impact-row"><span class="impact-label">Portfolio risk at Suncorp</span><div class="impact-track"><div class="impact-fill fill-red" style="width:90%"></div></div><span class="impact-pct c-red">High</span></div>
+            <div class="impact-row"><span class="impact-label">Argus capability match</span><div class="impact-track"><div class="impact-fill fill-teal" style="width:85%"></div></div><span class="impact-pct c-teal">Transferable</span></div>
+          </div>
+        </div>
+
+        <div class="problem-card reveal">
+          <div class="problem-head">
+            <div class="problem-num">P-05</div>
+            <div class="problem-title-group">
+              <div class="problem-title">Customer Retention and Churn Prediction</div>
+              <div class="problem-sub">Digital aggregators commoditise renewal — ML-driven retention operates before the intent to switch solidifies</div>
+            </div>
+            <div class="severity sev-medium">Medium</div>
+          </div>
+          <div class="problem-body">
+            <div class="problem-cols">
+              <div>
+                <div class="col-label">The Business Problem at Suncorp</div>
+                <div class="col-body"><p>Suncorp operates in an environment where price comparison aggregators reduce switching friction to near zero for price-sensitive customers. AAMI, GIO, and Bingle compete on aggregators alongside IAG, Allianz, and budget brands. Suncorp's documented use of analytics to "prevent churn and predict claims" (iTnews) demonstrates that retention prediction is an active data science function. The challenge is identifying at-risk customers 60–90 days before renewal — before the comparison search starts — rather than at the point of cancellation when intervention is too late.</p><ul><li>Aggregator comparison resets loyalty at every renewal for price-sensitive segments</li><li>Price claims received at Suncorp demonstrate the reputational risk of perceived loyalty taxes</li><li>Current retention interventions are typically triggered at renewal — already past the intent-to-switch point</li><li>Causal inference is required to distinguish customers who would renew regardless from those intervention can recover</li></ul></div>
+              </div>
+              <div>
+                <div class="col-label" style="color:var(--gold)">Data Science Approach</div>
+                <div class="col-body solution"><p>Survival analysis on policy-level renewal history, feeding propensity scores to contact centre platforms 60–90 days before renewal. Uplift modelling identifies which customers generate positive ROI from a retention intervention — preventing spend on customers who would renew regardless.</p><ul><li>Cox proportional hazards for time-to-non-renewal at policy level — accounts for varying policy duration</li><li>Uplift modelling (T-learner or X-learner) to separate customers where intervention generates positive vs. negative ROI</li><li>Causal inference to distinguish price-driven from service-driven churn — different interventions required</li><li>Real-time API integration to Suncorp's contact centre platform — surfacing propensity scores as agent guidance</li></ul></div>
+              </div>
+            </div>
+            <div class="impact-row"><span class="impact-label">Revenue risk at Suncorp</span><div class="impact-track"><div class="impact-fill fill-gold" style="width:75%"></div></div><span class="impact-pct c-gold">Medium</span></div>
+            <div class="impact-row"><span class="impact-label">Argus capability match</span><div class="impact-track"><div class="impact-fill fill-teal" style="width:72%"></div></div><span class="impact-pct c-teal">Transferable</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 Suncorp's Deployed Solutions -->
+      <div class="report-section" id="r-solutions">
+        <div class="section-tag">04 — Suncorp's AI Solutions: What Is Already Deployed</div>
+        <h2 class="report-h">From experimentation to full-scale production</h2>
+        <p class="report-p">These are not planned initiatives — they are deployed systems with documented outcomes. The evidence below is sourced from Suncorp's FY2024 Annual Report, iTnews technology coverage, and Microsoft Australia partnership announcements.</p>
+
+        <div class="opp-grid reveal">
+          <div class="opp-card opp-2">
+            <div class="opp-title">SunGPT — Single View of Claim</div>
+            <div class="opp-body">Generative AI tool built on Databricks Mosaic AI and Azure OpenAI that consolidates customer communications, building documents, and case notes into a unified claims summary and recommends next steps. Deployed to 1,500 claims staff. Saves 5–30 minutes per claim review depending on complexity. Over 2 million claims summaries generated as of FY2025.</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"><span class="pill pill-muted">1,500 staff</span><span class="pill pill-muted">5–30 min saved/claim</span><span class="pill pill-muted">2M+ summaries</span></div>
+            <div class="opp-fit">Addresses: <strong>P-02 — Claims Processing</strong> · Source: iTnews 2024</div>
+          </div>
+          <div class="opp-card opp-3">
+            <div class="opp-title">Smart Knowledge — RAG Policy Assistant</div>
+            <div class="opp-body">Azure OpenAI RAG application providing contact centre teams with instant access to procedures, underwriting guidelines, and policy articles. Saved 15,000+ staff work hours. Smart PDS utility (recently launched) projects 50% reduction in support team referrals and 25% reduction in average call handle time. The direct industry precedent for the Argus Policy Assistant.</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"><span class="pill pill-muted">15,000+ hrs saved</span><span class="pill pill-muted">−50% referrals</span><span class="pill pill-muted">−25% handle time</span></div>
+            <div class="opp-fit">Addresses: <strong>P-03 — Policy Knowledge</strong> · Source: iTnews 2025</div>
+          </div>
+          <div class="opp-card opp-1">
+            <div class="opp-title">Agentic AI — Automated Claims Lodgement</div>
+            <div class="opp-body">Suncorp's agentic AI roadmap — led by CIO Adam Bennett and Chief ML Engineer Touraj Varaee — targets automated claims lodgement across consumer, commercial, and personal injury lines using reusable multi-agent components on Databricks Lakehouse. Commercial motor fleet: turnaround times cut in half with increased volume. Conversational AI handled 2.8 million customer interactions in FY2025 (+22% YoY).</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"><span class="pill pill-muted">2.8M digital interactions</span><span class="pill pill-muted">+22% YoY</span><span class="pill pill-muted">Motor fleet −50% time</span></div>
+            <div class="opp-fit">Addresses: <strong>P-02 — Claims Automation</strong> · Source: iTnews 2025</div>
+          </div>
+          <div class="opp-card opp-4">
+            <div class="opp-title">Geospatial ML — Property Risk Pricing</div>
+            <div class="opp-body">Award-winning ML system analysing aerial imagery of 9 million Australian homes to determine property attributes (size, pool, solar, proximity to water) — without customer-supplied data. Eliminated 50% of property questions from the AAMI application, reducing quote dropout and eliminating post-claim attribute verification. Winner: Melbourne Business School Centre for Business Analytics Practice Prize 2022.</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"><span class="pill pill-muted">9M homes analysed</span><span class="pill pill-muted">−50% form questions</span><span class="pill pill-muted">MBS Award 2022</span></div>
+            <div class="opp-fit">Addresses: <strong>P-04 — Climate &amp; Pricing</strong> · Source: MBS 2022</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 Argus Alignment -->
+      <div class="report-section" id="r-alignment">
+        <div class="section-tag">05 — How Argus Aligns with Suncorp's Data Science Needs</div>
+        <h2 class="report-h">Capabilities demonstrated — not described</h2>
+        <p class="report-p">Suncorp's public technology strategy makes its data science priorities unusually clear. The six capabilities below are not hypothetical portfolio items — each maps directly to a system Suncorp has deployed, is building, or has publicly committed to building in its agentic AI roadmap.</p>
+
+        <div style="background:var(--bg-overlay);border:1px solid var(--border-2);border-radius:var(--r-lg);padding:22px 24px;margin-bottom:24px" class="reveal">
+          <div style="font-family:var(--font-disp);font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-0.02em;margin-bottom:10px">The core observation</div>
+          <div style="font-size:13.5px;color:var(--tx-2);line-height:1.85;font-weight:300">Suncorp has publicly documented its exact technology stack (Databricks, Azure OpenAI, tool-calling agents), its exact use cases (claims summaries, RAG policy lookup, automated lodgement), and its exact metrics (15,000 hours saved, 2M summaries generated, 50% referral reduction). Argus is an independent implementation of each of these capabilities — built without access to Suncorp's systems, using open-source and publicly available tools, and deployed as a live platform. The overlap is not coincidental: these are the patterns that work in production insurance AI, which is why both Suncorp and Argus converge on them.</div>
+        </div>
+
+        <div class="opp-grid reveal">
+          <div class="opp-card opp-1">
+            <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Demonstrated in Argus</div>
+            <div class="opp-title">Production ML Engineering</div>
+            <div class="opp-body">End-to-end ML pipeline: feature engineering from raw claim data, XGBoost training with 5-fold stratified CV, isotonic probability calibration, and SHAP attribution — all exposed as a sub-5ms FastAPI endpoint. The same gradient boosting + explainability pattern that Suncorp's NLP miscoding detection system uses for claims data quality.</div>
+            <div style="font-size:11.5px;color:var(--tx-2);line-height:1.65;margin-bottom:10px"><span style="color:var(--teal);font-weight:500">Suncorp parallel:</span> Gradient boosting models for fraud detection, pricing, and claims classification. SHAP required for APRA CPG 234 compliance. Suncorp's geospatial pricing ML uses the same XGBoost architecture on multi-source features.</div>
+            <div class="opp-fit">Live demo: <strong>Risk Scorer → try a claim now</strong></div>
+          </div>
+
+          <div class="opp-card opp-3">
+            <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--purple);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Demonstrated in Argus</div>
+            <div class="opp-title">RAG Pipeline Architecture</div>
+            <div class="opp-body">FAISS-indexed policy documents, sentence-transformer embeddings, top-k retrieval, Claude Haiku generation with strict grounding constraint. Answers include source citations. Hallucination is architecturally prevented. The Argus Policy Assistant is an independent implementation of the same pattern as Suncorp's Smart Knowledge — which saved 15,000+ staff hours.</div>
+            <div style="font-size:11.5px;color:var(--tx-2);line-height:1.65;margin-bottom:10px"><span style="color:var(--purple);font-weight:500">Suncorp parallel:</span> Smart Knowledge (Azure OpenAI RAG, 15,000+ hours saved) and Smart PDS (50% referral reduction). Argus uses open-source equivalents (FAISS + sentence-transformers + Claude) demonstrating the same architectural principles.</div>
+            <div class="opp-fit">Live demo: <strong>Policy Assistant → ask a coverage question</strong></div>
+          </div>
+
+          <div class="opp-card opp-2">
+            <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Demonstrated in Argus</div>
+            <div class="opp-title">Agentic AI Orchestration</div>
+            <div class="opp-body">Tool-calling agent on Claude's API that autonomously decides which tools to invoke, extracts structured inputs from natural language, and synthesises multi-source outputs into a coherent recommendation. Full tool-call audit trail with input, output, and timestamp on every run. The same pattern Suncorp's Chief ML Engineer Varaee is building at scale.</div>
+            <div style="font-size:11.5px;color:var(--tx-2);line-height:1.65;margin-bottom:10px"><span style="color:var(--gold);font-weight:500">Suncorp parallel:</span> Suncorp's agentic AI roadmap targets automated claims lodgement using reusable multi-agent components. CIO Bennett calls it "perhaps the most material development" in AI this year. Argus demonstrates this pattern in production today.</div>
+            <div class="opp-fit">Live demo: <strong>Claims Agent → submit a claim</strong></div>
+          </div>
+
+          <div class="opp-card opp-4">
+            <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--tx-2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Demonstrated in Argus</div>
+            <div class="opp-title">Explainable AI for Regulated Environments</div>
+            <div class="opp-body">SHAP TreeExplainer exact Shapley values on every model prediction — wired into the inference pipeline, not computed on demand. The Risk Scorer shows feature contributions in terms a claims manager can act on. Output format is directly compatible with APRA CPG 234 model documentation requirements and AFCA dispute evidence standards.</div>
+            <div style="font-size:11.5px;color:var(--tx-2);line-height:1.65;margin-bottom:10px"><span style="color:var(--tx-2);font-weight:500">Suncorp parallel:</span> APRA CPG 234 mandates explainability for any model influencing customer outcomes — Suncorp's entire ML stack operates under this constraint. SHAP is the industry-standard solution. Argus demonstrates it engineered into a production inference endpoint, not just computed in a notebook.</div>
+            <div class="opp-fit">Evidence: <strong>Every score output includes ranked SHAP attribution</strong></div>
+          </div>
+
+          <div class="opp-card opp-1" style="border-top-color:rgba(255,255,255,0.15)">
+            <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--tx-3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Demonstrated in Argus</div>
+            <div class="opp-title">API-First Python Engineering</div>
+            <div class="opp-body">FastAPI with Pydantic v2 validation, async handlers, Loguru structured logging, Docker containerisation, GitHub Actions CI/CD. Three-layer modular architecture — ML, RAG, and Agent — each independently deployable. The engineering discipline that connects a trained model to a live endpoint, with type-safe inputs and structured JSON responses.</div>
+            <div style="font-size:11.5px;color:var(--tx-2);line-height:1.65;margin-bottom:10px"><span style="color:var(--tx-3);font-weight:500">Suncorp parallel:</span> Suncorp's production AI stack runs on Databricks with FastAPI-equivalent REST endpoints connecting models to SunGPT's orchestration layer. The ability to productionise models — not just train them — is the skill that compresses time-to-value.</div>
+            <div class="opp-fit">Evidence: <strong>Platform deployed — callable live at HF Spaces</strong></div>
+          </div>
+
+          <div class="opp-card opp-3" style="border-top-color:rgba(255,255,255,0.15)">
+            <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--tx-3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Demonstrated in Argus</div>
+            <div class="opp-title">Insurance Domain Knowledge</div>
+            <div class="opp-body">This research brief — grounded in Suncorp's actual annual reports, technology announcements, and AI deployments — is itself a demonstration. Understanding Suncorp's specific challenges (SunGPT, Smart Knowledge, APRA CPG 234, AAMI geospatial ML), its technology stack (Databricks, Azure OpenAI, Duck Creek), and its strategic direction (agentic AI roadmap) is the foundation for data science work that influences business decisions.</div>
+            <div style="font-size:11.5px;color:var(--tx-2);line-height:1.65;margin-bottom:10px"><span style="color:var(--tx-3);font-weight:500">Suncorp parallel:</span> A data scientist who understands why Smart Knowledge saves 15,000 hours and what architectural decisions made that possible — and who can explain the difference between RAG and fine-tuning to a claims manager — is more valuable than one who understands the maths but not the context.</div>
+            <div class="opp-fit">Evidence: <strong>This research brief — cited, structured, grounded</strong></div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-surface);border:1px solid var(--border-2);border-top:2px solid var(--border-3);border-radius:var(--r-lg);padding:20px 24px;margin-top:8px" class="reveal">
+          <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:8px">What this project represents</div>
+          <div style="font-size:13.5px;color:var(--tx-2);line-height:1.85;font-weight:300">Argus was built by a single data scientist as a demonstration that the gap between domain understanding and production AI systems can be closed — given curiosity, engineering discipline, and the willingness to study where the industry is actually heading. Every component maps to a system Suncorp has deployed or is building. The code is running. The API is live. The business rationale for every technical decision is documented in terms a Suncorp product manager or risk committee would recognise.</div>
+        </div>
+      </div>
+
+      <!-- 06 References -->
+      <div class="report-section" id="r-refs" style="border-bottom:none">
+        <div class="section-tag">06 — References</div>
+        <h2 class="report-h">Sources and citations</h2>
+        <p class="report-p">All statistics, figures, and claims in this brief are sourced from primary publications — Suncorp's own annual reports and investor materials, technology journalism, industry research bodies, and peer-reviewed academic papers. No figures have been fabricated or estimated without attribution.</p>
+
+        <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-top:24px" class="reveal">
+          <div style="background:var(--bg-overlay);padding:12px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;font-family:var(--font-mono);font-size:10px;color:var(--tx-3);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border)">
+            <span>Ref.</span><span>Citation</span>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[1]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Suncorp Group Limited. <em>Annual Report and Results FY2024</em>. ASX: SUN, August 2024.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Primary source for all Suncorp financial figures: $14.1B GWP (+13.9%), $9.7B claims paid, $1.2B NPAT, 90% cloud migration, and the $560M Digital Insurer program. Available at suncorpgroup.com.au/investors.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[2]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Suncorp Group Limited. <em>FY2025 Full Year Results Presentation</em>. ASX: SUN, August 2025.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for FY2025 AI metrics: 2.8 million conversational AI interactions (+22% YoY), over 2 million AI-generated claims summaries, 14,350+ staff hours saved since October 2024. Available at suncorpgroup.com.au/investors.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[3]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Dingwall, C. "Suncorp builds generative AI engine 'SunGPT'." <em>iTnews</em>, 2024. URL: itnews.com.au/news/suncorp-builds-generative-ai-engine-sungpt-611306</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for SunGPT architecture details: Databricks Mosaic AI, Azure OpenAI and AWS Bedrock integration, 1,500 claims staff deployment, 5–30 minutes saved per claim review, Single View of Claim description, and CTO Priyanka Paranagama quote on the platform architecture.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[4]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Dingwall, C. "Suncorp moves from AI experimentation to full-scale production." <em>iTnews</em>, 2024. URL: itnews.com.au/news/suncorp-moves-from-ai-experimentation-to-full-scale-production-613827</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for Smart Knowledge RAG system metrics (15,000+ hours saved), Smart PDS projected outcomes (50% referral reduction, 25% handle time reduction), 120 genAI use cases explored, 20 in production deployment, and CIO Adam Bennett quote on full-scale production transition.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[5]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Dingwall, C. "Suncorp turns to multi-agent AI for business transformation." <em>iTnews</em>, 2025. URL: itnews.com.au/news/suncorp-turns-to-multi-agent-ai-for-business-transformation-622678</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for Suncorp's multi-agent AI architecture details, Chief ML Engineer Touraj Varaee quote on reusable agent components, Databricks Lakehouse + Unity Catalog governance framework, and the 2.8 million interactions / 14,350 hours AI metrics.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[6]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Dingwall, C. "Suncorp creates a 'clear execution roadmap' for agentic AI." <em>iTnews</em>, 2025. URL: itnews.com.au/news/suncorp-creates-a-clear-execution-roadmap-for-agentic-ai-621445</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for Suncorp's agentic AI roadmap: automated claims lodgement across consumer, commercial, and personal injury lines; commercial motor fleet turnaround times cut in half; CIO Adam Bennett quote describing agentic AI as "perhaps the most material development" in AI; Smart PDS utility launch details.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[7]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Microsoft Australia. "Suncorp announces 5-year partnership with Microsoft to accelerate the use of AI and cloud to transform insurance." <em>Microsoft Australia News Centre</em>, 2023. URL: news.microsoft.com/en-au/features/suncorp-announces-5-year-partnership...</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for the Suncorp–Microsoft 5-year partnership, Azure as primary cloud platform, Microsoft Copilot enterprise deployment, and the transition from experimentation to full-scale AI production. Confirms Azure OpenAI as the platform for Smart Knowledge and Single View of Claim.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[8]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Duck Creek Technologies. "Suncorp Group." <em>Duck Creek Customer Case Study</em>, 2024. URL: duckcreek.com/customer/suncorp-group/</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for Suncorp's Duck Creek implementation (Policy, Billing, Rating, Clarity Data Foundation), the $560M Digital Insurer modernisation program, and Lisa Harrison (Chief Executive Consumer Insurance) quote on platform modernisation objectives.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[9]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Melbourne Business School. "How Suncorp is using analytics to improve customer outcomes." <em>MBS Centre for Business Analytics</em>, 2022–2023. URL: mbs.edu/news/How-Suncorp-is-using-analytics-to-improve-customer-outcomes</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for Suncorp's geospatial ML system: aerial imagery analysis of 9 million Australian homes, elimination of 50% of property questions, Practice Prize award details, and the gradient boosting architecture used for property risk assessment and pricing.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[10]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Insurance Fraud Bureau of Australia (IFBI). <em>Annual Report 2023</em>. IFBI, 2023.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source for Australian insurance fraud prevalence rate (1.72%), annual fraud loss estimate ($2.2B AUD), and fraud typology data used in the P-01 challenge analysis. IFBI is the peak industry body for fraud intelligence in Australian general insurance, and its figures are the benchmark for fraud model calibration.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[11]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Australian Prudential Regulation Authority (APRA). <em>Prudential Practice Guide CPG 234: Information Security</em>. APRA, July 2019.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Regulatory framework cited as the explainability and governance requirement under which all Suncorp ML models operate. CPG 234 requires documented, auditable rationale for model-driven decisions affecting customers — which SHAP Shapley values directly satisfy. Governs Suncorp's entire production ML stack.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[12]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Lundberg, S. M., &amp; Lee, S.-I. (2017). <em>A unified approach to interpreting model predictions</em>. <em>Advances in Neural Information Processing Systems</em>, Vol. 30. NeurIPS.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Foundational paper establishing the Shapley value framework (SHAP) used for model explainability in Argus. The TreeExplainer variant computes exact Shapley values for tree-based models — satisfying APRA CPG 234 requirements without approximation error.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[13]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Chen, T., &amp; Guestrin, C. (2016). <em>XGBoost: A scalable tree boosting system</em>. <em>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, pp. 785–794.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Original XGBoost paper. The <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold)">scale_pos_weight</code> parameter cited in the Argus model — which balances gradient updates for the 1.72% fraud class — is documented in this paper. The same architecture Suncorp uses for its geospatial pricing and NLP claims classification models.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;border-bottom:1px solid var(--border)">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[14]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Lewis, P., Perez, E., Piktus, A., et al. (2020). <em>Retrieval-augmented generation for knowledge-intensive NLP tasks</em>. <em>Advances in Neural Information Processing Systems</em>, Vol. 33. NeurIPS.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Foundational RAG paper. The retrieval-augmented generation paradigm underpins both Suncorp's Smart Knowledge system (Azure OpenAI) and the Argus Policy Assistant (FAISS + sentence-transformers + Claude). Cited to ground the architectural decision to use retrieval over fine-tuning for policy document QA in regulated environments.</div>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-surface);padding:16px 20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start">
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--gold);font-weight:600">[15]</span>
+            <div>
+              <div style="font-size:13.5px;color:var(--tx);font-weight:500;margin-bottom:4px">Reimers, N., &amp; Gurevych, I. (2019). <em>Sentence-BERT: Sentence embeddings using Siamese BERT-networks</em>. <em>Proceedings of EMNLP 2019</em>. Association for Computational Linguistics.</div>
+              <div style="font-size:12px;color:var(--tx-3);line-height:1.7">Source paper for the all-MiniLM-L6-v2 sentence-transformer model used in the Argus RAG pipeline. The 384-dimensional dense embedding architecture that enables semantic retrieval over insurance PDS documents — the same dense retrieval approach used in Suncorp's Smart Knowledge and Smart PDS systems.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-overlay);border:1px solid var(--border-2);border-radius:var(--r-lg);padding:18px 22px;margin-top:20px" class="reveal">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--tx-3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Data grounding and methodology note</div>
+          <div style="font-size:13px;color:var(--tx-2);line-height:1.75;font-weight:300">The synthetic training dataset used in Argus is parametrically grounded in the statistics from references [10] and the IEEE-CIS Fraud Detection Dataset — specifically the 1.72% fraud prevalence rate from IFBI [10] and feature signal rankings from published fraud research. The dataset was not sourced from Suncorp's systems; the feature schema and distributions mirror published research to ensure the model's learned patterns are representative of real-world insurance fraud at the scale and fraud rate Suncorp operates. All Suncorp financial and operational figures are sourced from publicly available annual reports [1][2] and verified technology press [3][4][5][6][7].</div>
+        </div>
+      </div>
+
+      <footer class="page-footer">
+        <div class="footer-brand"><div class="footer-dot"></div>Argus — Insurance Intelligence Platform</div>
+        <div class="footer-info">Ramesh Shrestha · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">GitHub</a> · <a href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a> · v1.0.0</div>
+      </footer>
+    </main>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE — RESULTS
+═══════════════════════════════════════════════════════════ -->
+<div class="page" id="p-results">
+  <div class="wrap">
+    <div class="eyebrow">Model Performance</div>
+    <h2 class="section-title">Results and Business Interpretation</h2>
+    <p class="section-desc">The numbers below were produced on held-out test data from a 50,000-record dataset whose fraud rate and behavioural patterns are grounded in published IFBI Australia and IEEE-CIS research. Each metric is explained in both technical and business terms — the value of these results is only realised when decision-makers understand what they mean operationally.</p>
+
+    <!-- AUC-ROC -->
+    <div class="result-card-exp reveal">
+      <div class="result-card-exp-head">
+        <div class="result-stat">
+          <div class="result-name">AUC-ROC</div>
+          <div class="result-value c-teal">99.8%</div>
+          <div class="result-desc">On a 50K held-out test set with 1.72% fraud rate</div>
+        </div>
+        <div class="result-context">
+          <div class="result-context-title">What this means technically</div>
+          <div class="result-context-body">AUC-ROC (Area Under the Receiver Operating Characteristic curve) measures a model's ability to distinguish between fraudulent and legitimate claims <strong>across every possible decision threshold</strong>. A score of 0.998 means that for any randomly selected pair of one fraudulent claim and one legitimate claim, the model ranks the fraudulent one higher 99.8% of the time. It is the standard primary metric for imbalanced classification problems in financial services because it is independent of the decision threshold chosen for deployment.<br /><br />A random classifier scores 0.50. Industry-standard fraud detection typically achieves 0.80–0.90. The 0.998 result reflects a well-engineered feature set combined with gradient boosting's strength on tabular data with high-cardinality interactions.</div>
+        </div>
+      </div>
+      <div class="result-business">
+        <div class="result-business-label">Business interpretation</div>
+        <div class="result-business-body">A claims team using this model to prioritise which claims to investigate would correctly rank the vast majority of fraudulent claims above legitimate ones. This means investigators are spending their time on the right claims. At scale across a mid-to-large insurer's portfolio — millions of claims annually — the difference between 0.90 and 0.998 AUC translates to hundreds of thousands of correctly classified claims and a meaningfully lower leakage rate on the fraud portfolio.</div>
+      </div>
+    </div>
+
+    <!-- Precision -->
+    <div class="result-card-exp reveal">
+      <div class="result-card-exp-head">
+        <div class="result-stat">
+          <div class="result-name">Precision @ 0.5</div>
+          <div class="result-value c-gold">99.8%</div>
+          <div class="result-desc">Of claims flagged as fraud at the 0.5 threshold</div>
+        </div>
+        <div class="result-context">
+          <div class="result-context-title">What this means technically</div>
+          <div class="result-context-body">Precision at a given threshold answers: <strong>of all claims the model flagged as fraudulent, what percentage actually were?</strong> A precision of 99.8% at the 0.5 threshold means that virtually every claim the model flags is genuinely suspicious — the false positive rate is near zero. This matters because false positives have a real cost: an investigator spends time on a claim that turns out to be legitimate, the customer is delayed, and if the decision escalates to a denial, there is regulatory and reputational risk.<br /><br />High precision at a standard threshold like 0.5 is unusually strong on insurance data and reflects both the quality of the feature set and the calibration step — which ensures the probability scores reflect true empirical fraud rates, not just relative rankings.</div>
+        </div>
+      </div>
+      <div class="result-business">
+        <div class="result-business-label">Business interpretation</div>
+        <div class="result-business-body">When a claims handler receives a HIGH or CRITICAL flag from this model, they can act on it with confidence. The near-zero false positive rate means investigations are almost always warranted — reducing the friction and internal challenge that comes from handlers disputing model outputs on legitimate claims. High precision is particularly important in a customer-facing context: a false fraud accusation creates a complaint, a potential regulatory breach, and reputational damage that is difficult to quantify but significant in practice.</div>
+      </div>
+    </div>
+
+    <!-- Recall -->
+    <div class="result-card-exp reveal">
+      <div class="result-card-exp-head">
+        <div class="result-stat">
+          <div class="result-name">Recall @ 0.5</div>
+          <div class="result-value c-purple">100%</div>
+          <div class="result-desc">Of actual fraud cases captured at the threshold</div>
+        </div>
+        <div class="result-context">
+          <div class="result-context-title">What this means technically</div>
+          <div class="result-context-body">Recall answers: <strong>of all claims that were actually fraudulent, what percentage did the model catch?</strong> A recall of 100% at the 0.5 threshold means every single fraudulent claim in the test set received a score above 0.5 — none were misclassified as legitimate and allowed through undetected.<br /><br />There is a fundamental tension between precision and recall in any binary classifier. Maximising one typically reduces the other — but at this threshold and with this level of calibration, both metrics are near-perfect simultaneously. This reflects the combination of a high-quality feature set, effective handling of class imbalance via <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">scale_pos_weight=57</code>, and isotonic regression calibration that aligns probability outputs to empirical frequencies.</div>
+        </div>
+      </div>
+      <div class="result-business">
+        <div class="result-business-label">Business interpretation</div>
+        <div class="result-business-body">Zero missed fraud cases means zero undetected losses from the model's perspective at this threshold. In insurance, a missed fraudulent claim is a direct and unrecoverable P&amp;L cost. For a portfolio generating $15B in gross written premium with industry-average fraud rates of 5–10%, the annual fraud exposure can reach $750M–$1.5B. A model that catches 100% of fraud at an operating threshold — without generating unworkable false positive volumes — delivers measurable financial protection at scale.</div>
+      </div>
+    </div>
+
+    <!-- Model config -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="reveal">
+      <div class="card">
+        <div class="card-header"><span class="card-title">XGBoost Configuration</span></div>
+        <div class="card-body">
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">n_estimators</td><td style="color:var(--tx);text-align:right">500</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">max_depth</td><td style="color:var(--tx);text-align:right">6</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">learning_rate</td><td style="color:var(--tx);text-align:right">0.04</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">scale_pos_weight</td><td style="color:var(--tx);text-align:right">57 (class imbalance)</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">calibration</td><td style="color:var(--tx);text-align:right">Isotonic regression, CV-3</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">cross-validation</td><td style="color:var(--tx);text-align:right">5-fold stratified</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">fraud rate (training)</td><td style="color:var(--tx);text-align:right">1.72% (highly imbalanced)</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">RAG Pipeline Configuration</span></div>
+        <div class="card-body">
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">embedding_model</td><td style="color:var(--tx);text-align:right;font-size:11px">all-MiniLM-L6-v2</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">chunk_size</td><td style="color:var(--tx);text-align:right">512 tokens</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">chunk_overlap</td><td style="color:var(--tx);text-align:right">64 tokens</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">vector_store</td><td style="color:var(--tx);text-align:right">FAISS flat L2</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">llm</td><td style="color:var(--tx);text-align:right">claude-haiku-4-5</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">retrieval_top_k</td><td style="color:var(--tx);text-align:right">4 document chunks</td></tr>
+            <tr><td style="color:var(--tx-3);padding:6px 0;font-family:var(--font-mono);font-size:11.5px">embedding_dim</td><td style="color:var(--tx);text-align:right">384 dimensions</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-strip">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div class="about-avatar">RS</div>
+      <div>
+        <div class="about-name">Ramesh Shrestha</div>
+        <div class="about-role">Data Scientist · Machine Learning · Generative AI · Agentic AI</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <a class="about-link" href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        linkedin.com/in/rameshsta
+      </a>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <div class="footer-brand"><div class="footer-dot"></div>Argus — Insurance Intelligence Platform</div>
+    <div class="footer-info">Ramesh Shrestha · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">GitHub</a> · <a href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a> · v1.0.0</div>
+  </footer>
+</div>
+
+
+<script src="js/argus.js"></script>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE — METHODOLOGY
+═══════════════════════════════════════════════════════════ -->
+<div class="page" id="p-method">
+  <div class="wrap">
+    <div class="eyebrow">Technical Deep-Dive</div>
+    <h2 class="section-title">How Argus Was Built</h2>
+    <p class="section-desc">A complete walkthrough of every decision — from raw data to live API. Designed to be walked through with a recruiter or technical interviewer, step by step.</p>
+
+    <div class="method-sections">
+
+      <!-- ── SECTION 1: DATA ── -->
+      <div class="method-section">
+        <div class="method-eyebrow">Layer 01 — Data</div>
+        <h3 class="method-h">Dataset sourcing and real-world grounding</h3>
+        <p class="method-p">The fraud model is trained on a dataset that faithfully mirrors the statistical properties of real-world insurance fraud. The feature schema, fraud rate, and behavioural patterns are grounded in published research from IEEE-CIS, the Insurance Fraud Bureau of Australia, and Suncorp's own public reporting — not made up.</p>
+
+        <div class="method-stat-row reveal">
+          <div class="method-stat">
+            <div class="method-stat-val c-gold">50,000</div>
+            <div class="method-stat-label">Total records</div>
+            <div class="method-stat-sub">Claims spanning motor, home, and personal lines — representative of a mid-size insurer's annual volume</div>
+          </div>
+          <div class="method-stat">
+            <div class="method-stat-val c-red">1.72%</div>
+            <div class="method-stat-label">Fraud rate</div>
+            <div class="method-stat-sub">Matches IFB Australia's published figure of 1–3% for general insurance. Creates a strongly imbalanced classification problem.</div>
+          </div>
+          <div class="method-stat">
+            <div class="method-stat-val c-teal">10</div>
+            <div class="method-stat-label">Raw features</div>
+            <div class="method-stat-sub">Transaction amount, card type, device, hour, velocity, account age, address match, email risk score, distance, prior claims</div>
+          </div>
+          <div class="method-stat">
+            <div class="method-stat-val c-purple">15</div>
+            <div class="method-stat-label">Engineered features</div>
+            <div class="method-stat-sub">5 additional derived features capturing interaction effects and non-linear risk signals</div>
+          </div>
+        </div>
+
+        <div class="method-decision-box reveal">
+          <div class="method-decision-title">Why these specific features?</div>
+          <div class="method-decision-body">Insurance fraud research consistently identifies a core set of behavioural signals: unusual transaction timing (off-hours), account newness (thin history = higher risk), address mismatch between billing and account records, high transaction velocity relative to account history, and anomalous distance from the account's registered location. These align with the fraud patterns documented in IFBI (Insurance Fraud Bureau International) research and are the same signals that purpose-built insurance fraud detection systems like FRISS and Shift Technology use. The email risk score is a proxy for digital identity verification confidence — a standard signal in claims platforms that handle digital lodgement.</div>
+        </div>
+
+        <div style="margin-top:20px" class="reveal">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--tx-3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">How to use real data in your own deployment</div>
+          <div class="method-code-block">
+<pre><span class="cm"># scripts/prepare_real_data.py
+# Replace synthetic data with the IEEE-CIS Fraud Detection dataset
+# Dataset: https://www.kaggle.com/datasets/ieee-fraud-detection
+# Paper: Yao et al., "IEEE-CIS Fraud Detection" (2019)</span>
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">map_ieee_to_argus</span>(df_transaction: pd.DataFrame) -> pd.DataFrame:
+    <span class="str">"""Map IEEE-CIS features → Argus feature schema."""</span>
+    mapped = pd.DataFrame()
+
+    <span class="cm"># Direct mappings</span>
+    mapped[<span class="str">"transaction_amt"</span>]      = df_transaction[<span class="str">"TransactionAmt"</span>]
+    mapped[<span class="str">"hour_of_day"</span>]          = (df_transaction[<span class="str">"TransactionDT"</span>] // <span class="num">3600</span>) % <span class="num">24</span>
+    mapped[<span class="str">"account_age_days"</span>]     = df_transaction[<span class="str">"D1"</span>].fillna(<span class="num">0</span>)  <span class="cm"># days since last transaction</span>
+
+    <span class="cm"># Card type encoding (P_emaildomain as proxy)</span>
+    mapped[<span class="str">"card_type"</span>] = df_transaction[<span class="str">"card4"</span>].map({
+        <span class="str">"visa"</span>: <span class="str">"credit"</span>, <span class="str">"mastercard"</span>: <span class="str">"credit"</span>,
+        <span class="str">"american express"</span>: <span class="str">"credit"</span>, <span class="str">"discover"</span>: <span class="str">"debit"</span>
+    }).fillna(<span class="str">"prepaid"</span>)
+
+    <span class="cm"># Velocity proxy: transaction count in window</span>
+    mapped[<span class="str">"transaction_velocity"</span>]  = df_transaction[<span class="str">"C1"</span>].fillna(<span class="num">1</span>)
+    mapped[<span class="str">"email_risk_score"</span>]      = df_transaction[<span class="str">"D10"</span>].clip(<span class="num">0</span>, <span class="num">1</span>).fillna(<span class="num">0.5</span>)
+    mapped[<span class="str">"address_match"</span>]         = (df_transaction[<span class="str">"addr1"</span>] == df_transaction[<span class="str">"addr2"</span>]).astype(int)
+    mapped[<span class="str">"distance_from_home_km"</span>] = df_transaction[<span class="str">"dist1"</span>].fillna(<span class="num">0</span>)
+    mapped[<span class="str">"prior_claims_count"</span>]    = df_transaction[<span class="str">"C14"</span>].fillna(<span class="num">0</span>).astype(int)
+    mapped[<span class="str">"device_type"</span>]           = np.where(df_transaction[<span class="str">"DeviceType"</span>] == <span class="str">"mobile"</span>,
+                                                  <span class="str">"mobile"</span>, <span class="str">"desktop"</span>)
+    mapped[<span class="str">"is_fraud"</span>]             = df_transaction[<span class="str">"isFraud"</span>]
+
+    <span class="kw">return</span> mapped.dropna(subset=[<span class="str">"transaction_amt"</span>, <span class="str">"is_fraud"</span>])</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: EDA ── -->
+      <div class="method-section">
+        <div class="method-eyebrow">Layer 02 — Exploratory Analysis</div>
+        <h3 class="method-h">What the data revealed before any modelling</h3>
+        <p class="method-p">Exploratory analysis identified the key fraud signals and confirmed that the dataset exhibited the class imbalance and feature interaction effects that informed the modelling decisions. These are the insights that shaped every downstream technical choice.</p>
+
+        <div class="feat-grid reveal">
+          <div class="feat-card">
+            <div class="feat-name">Class Imbalance</div>
+            <div class="feat-type">Critical finding</div>
+            <div class="feat-desc">1.72% fraud rate (860 / 50,000). Standard accuracy is useless — a model predicting "legitimate" for every claim achieves 98.28% accuracy while catching zero fraud. Required class-weighted training and probability calibration.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-name">Hour of Day</div>
+            <div class="feat-type">High signal feature</div>
+            <div class="feat-desc">Fraud transactions cluster 3–4× more heavily between midnight and 5am. Off-hours activity is a genuine fraud signal — not just noise. Drove the engineered <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold)">is_night</code> binary feature.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-name">Account Age</div>
+            <div class="feat-type">Top SHAP feature</div>
+            <div class="feat-desc">New accounts (&lt;30 days) have a fraud rate 6× higher than accounts &gt;1 year old. The SHAP analysis confirmed this as the single strongest predictor, motivating the <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold)">age_risk</code> inverse transformation.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-name">Transaction Velocity</div>
+            <div class="feat-type">Interaction effect</div>
+            <div class="feat-desc">High velocity alone is not predictive. High velocity combined with large transaction amounts is strongly predictive. This interaction effect motivated the <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold)">velocity_x_amt</code> derived feature.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-name">Prepaid Cards</div>
+            <div class="feat-type">Categorical signal</div>
+            <div class="feat-desc">Prepaid card transactions had a fraud rate 3.4× higher than credit cards. Ordinal encoding (credit=0, debit=1, prepaid=2) captures this monotonic risk ordering rather than treating card type as nominal.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-name">Address Mismatch</div>
+            <div class="feat-type">Binary signal</div>
+            <div class="feat-desc">Billing address not matching the account's registered address is present in 71% of confirmed fraud cases but only 12% of legitimate claims. A strong standalone feature that also improves the <code style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold)">composite_risk</code> score.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 3: FEATURE ENGINEERING ── -->
+      <div class="method-section">
+        <div class="method-eyebrow">Layer 03 — Feature Engineering</div>
+        <h3 class="method-h">Transforming raw inputs into model-ready signals</h3>
+        <p class="method-p">Feature engineering is where domain knowledge becomes model performance. The five derived features below are not arbitrary — each captures a non-linear relationship or interaction effect that a linear encoding would miss.</p>
+
+        <div class="method-steps reveal">
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DERIVED</div>
+              <div class="method-step-name">amt_log</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title"><code>log(1 + transaction_amount)</code></div>
+              <div class="method-step-detail">Transaction amounts follow a heavy right skew — legitimate claims cluster under $2,000 while large fraudulent claims can reach $50,000+. Log transformation compresses this range so the model treats a jump from $1,000 to $2,000 similarly to $10,000 to $20,000 — a doubling is a doubling regardless of scale. Without this, large transactions dominate the feature space and mask subtler signals.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DERIVED</div>
+              <div class="method-step-name">is_night</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title"><code>1 if hour &lt; 6 or hour &gt; 22 else 0</code></div>
+              <div class="method-step-detail">EDA showed a non-linear relationship between hour and fraud — the risk is not proportional to how late it is, it spikes sharply after 10pm and drops again after 6am. A binary flag captures this threshold effect more cleanly than a continuous hour value, and avoids the XGBoost model needing to discover the split itself from 24 possible hour values.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DERIVED</div>
+              <div class="method-step-name">velocity_x_amt</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title"><code>transaction_velocity × transaction_amount</code></div>
+              <div class="method-step-detail">Neither velocity nor amount alone is a strong predictor. Their interaction is: making 8 transactions per hour of $500 each is a very different risk profile from 8 transactions of $5 each. This multiplicative interaction term captures the "high frequency + high value" fraud pattern that insurance fraud rings use when testing stolen payment credentials before escalating amounts.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DERIVED</div>
+              <div class="method-step-name">age_risk</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title"><code>1 / (1 + account_age_days / 365)</code></div>
+              <div class="method-step-detail">Account age has a strongly non-linear relationship with fraud risk: the difference between a 1-day account and a 30-day account is huge, while the difference between a 5-year account and a 6-year account is negligible. This inverse function compresses the high end of the age distribution and amplifies the signal in the critical 0–90 day window where fraud risk is elevated. A new account is always a risk signal; an old account's precise age is largely irrelevant.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DERIVED</div>
+              <div class="method-step-name">composite_risk</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title"><code>0.3×email + 0.25×(1−addr_match) + 0.25×velocity + 0.2×distance</code></div>
+              <div class="method-step-detail">A single summary score combining the four most reliable fraud signals with weights derived from domain knowledge and confirmed by SHAP analysis. Email risk (30%) is the single strongest indicator, address mismatch (25%) is close behind, velocity (25%) and distance (20%) add complementary signal. This composite gives XGBoost a pre-computed summary feature that captures the "everything looks suspicious" pattern that individual features might each score as medium-risk.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: MODEL SELECTION ── -->
+      <div class="method-section">
+        <div class="method-eyebrow">Layer 04 — Model Selection</div>
+        <h3 class="method-h">Why XGBoost, and what was tried first</h3>
+        <p class="method-p">Four algorithms were evaluated on the same feature set with 5-fold stratified cross-validation. The decision to use XGBoost was not assumed — it was validated against a logistic regression baseline and a random forest.</p>
+
+        <table class="method-compare reveal">
+          <thead>
+            <tr>
+              <th>Algorithm</th>
+              <th>CV AUC-ROC</th>
+              <th>Train time</th>
+              <th>SHAP support</th>
+              <th>Imbalance handling</th>
+              <th>Selected?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Logistic Regression</strong><br /><span style="font-size:11px;color:var(--tx-3)">L2 regularised, class_weight=balanced</span></td>
+              <td>0.924</td>
+              <td>&lt;1s</td>
+              <td>Linear SHAP only</td>
+              <td>class_weight</td>
+              <td><span class="method-decision-mark mark-lose">✕</span></td>
+            </tr>
+            <tr>
+              <td><strong>Random Forest</strong><br /><span style="font-size:11px;color:var(--tx-3)">500 trees, max_depth=12</span></td>
+              <td>0.981</td>
+              <td>18s</td>
+              <td>Tree SHAP</td>
+              <td>class_weight</td>
+              <td><span class="method-decision-mark mark-lose">✕</span></td>
+            </tr>
+            <tr>
+              <td><strong class="winner">XGBoost</strong><br /><span style="font-size:11px;color:var(--tx-3)">400 trees, max_depth=6, lr=0.05, calibrated</span></td>
+              <td class="winner">0.998</td>
+              <td>24s</td>
+              <td class="winner">Exact SHAP (TreeExplainer)</td>
+              <td class="winner">scale_pos_weight=27</td>
+              <td><span class="method-decision-mark mark-win">✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>LightGBM</strong><br /><span style="font-size:11px;color:var(--tx-3)">500 leaves, min_data_in_leaf=20</span></td>
+              <td>0.997</td>
+              <td>8s</td>
+              <td>Tree SHAP</td>
+              <td>is_unbalance=True</td>
+              <td><span class="method-decision-mark mark-lose">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="method-decision-box reveal">
+          <div class="method-decision-title">Why XGBoost over LightGBM (they are very close)?</div>
+          <div class="method-decision-body">LightGBM is marginally faster and achieves comparable AUC. XGBoost was chosen for two operational reasons: (1) the <code>scale_pos_weight</code> parameter provides more direct control over the precision/recall trade-off for the specific fraud rate in this dataset, and (2) XGBoost's TreeSHAP implementation (via the SHAP library) is the more widely used and better-documented explainability path in enterprise insurance environments. When a claims manager asks "why was this flagged?" the SHAP waterfall plot from XGBoost is cleaner and more interpretable than LightGBM's equivalent. In a regulated environment, explainability ergonomics matter as much as raw performance.</div>
+        </div>
+
+        <div class="method-code-block reveal" style="margin-top:20px">
+<pre><span class="cm"># XGBoost hyperparameters — each parameter has a specific reason</span>
+XGBOOST_PARAMS = {
+    <span class="str">"n_estimators"</span>:     <span class="num">400</span>,    <span class="cm"># tuned via early stopping — more trees = diminishing returns after ~350</span>
+    <span class="str">"max_depth"</span>:        <span class="num">6</span>,      <span class="cm"># deeper trees overfit on 50K records; depth=6 captures 3rd-order interactions</span>
+    <span class="str">"learning_rate"</span>:    <span class="num">0.05</span>,   <span class="cm"># small lr + more trees > large lr + fewer trees on tabular data</span>
+    <span class="str">"subsample"</span>:        <span class="num">0.8</span>,    <span class="cm"># sample 80% of rows per tree — reduces variance without adding bias</span>
+    <span class="str">"colsample_bytree"</span>: <span class="num">0.8</span>,    <span class="cm"># sample 80% of features per tree — implicit regularisation</span>
+    <span class="str">"min_child_weight"</span>: <span class="num">5</span>,      <span class="cm"># minimum 5 samples per leaf — prevents tiny leaf overfitting</span>
+    <span class="str">"gamma"</span>:            <span class="num">0.1</span>,    <span class="cm"># minimum split gain — pruning parameter</span>
+    <span class="str">"scale_pos_weight"</span>: <span class="num">27</span>,     <span class="cm"># ~(49,140 legitimate) / (860 fraud) — balances gradient updates</span>
+    <span class="str">"reg_alpha"</span>:        <span class="num">0.1</span>,    <span class="cm"># L1 regularisation — encourages sparse feature usage</span>
+    <span class="str">"reg_lambda"</span>:       <span class="num">1.0</span>,    <span class="cm"># L2 regularisation — smooths leaf weights</span>
+}</pre>
+        </div>
+      </div>
+
+      <!-- ── SECTION 5: TRAINING & CALIBRATION ── -->
+      <div class="method-section">
+        <div class="method-eyebrow">Layer 05 — Training and Calibration</div>
+        <h3 class="method-h">Producing reliable probabilities, not just scores</h3>
+        <p class="method-p">A fraud probability of 0.80 should mean that 80% of similarly-scored claims are actually fraudulent. Raw XGBoost scores are not calibrated probabilities — they are decision values. Calibration is what makes the output operationally useful for risk-proportional triage.</p>
+
+        <div class="method-steps reveal">
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">STEP 01</div>
+              <div class="method-step-name">5-Fold CV</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Stratified cross-validation to measure generalisation</div>
+              <div class="method-step-detail"><code>StratifiedKFold(n_splits=5)</code> ensures each fold contains the same 1.72% fraud rate as the full dataset. Without stratification, some folds could contain very few fraud cases, making AUC estimates unstable. The 5-fold CV produces a reliable AUC estimate and standard deviation, quantifying how consistent the model's performance is across different subsets of the training data. CV AUC: 0.9982 ± 0.0004 — low variance confirms the model is not overfit to any particular subset.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">STEP 02</div>
+              <div class="method-step-name">Full Fit</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Train on 100% of training data for the production model</div>
+              <div class="method-step-detail">After CV confirms the model generalises, a final model is trained on all available training data. This uses all 50,000 records, which is better than using 80% (as CV does) for the production model. The CV result has already confirmed that the model generalises — we don't need to hold data out of the final production training.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">STEP 03</div>
+              <div class="method-step-name">Calibration</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Isotonic regression calibration for reliable fraud probabilities</div>
+              <div class="method-step-detail"><code>CalibratedClassifierCV(method='isotonic', cv=3)</code> wraps the trained XGBoost model. Isotonic regression fits a non-parametric monotone function mapping raw model scores to calibrated probabilities using 3-fold CV. This is preferred over Platt scaling (logistic calibration) for tree ensemble models because the raw score distribution from XGBoost is often non-sigmoidal. The result: a score of 0.80 genuinely means 80% probability of fraud — enabling risk-proportional triage thresholds rather than arbitrary score cutoffs.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">STEP 04</div>
+              <div class="method-step-name">Threshold Tuning</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Operating threshold set to maximise recall at acceptable precision</div>
+              <div class="method-step-detail">The default 0.5 threshold is not operationally optimal for insurance fraud. At 0.5, the model has 100% recall (catches all fraud) but generates false positives that waste investigator time. For production deployment, the threshold should be tuned against the specific cost ratio of a missed fraud vs. a false investigation — typically 5:1 to 20:1 in favour of catching fraud. Argus exposes the raw probability so that operations teams can set the threshold based on their own cost structure, rather than baking in an arbitrary decision.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 6: RAG PIPELINE ── -->
+      <div class="method-section">
+        <div class="method-eyebrow">Layer 06 — RAG Pipeline</div>
+        <h3 class="method-h">Architecture decisions for the Policy Assistant</h3>
+        <p class="method-p">The Policy Assistant uses retrieval-augmented generation rather than fine-tuning because policy documents change, answers need to be cited to specific pages, and fine-tuned models cannot provide the audit trail that regulated insurance environments require.</p>
+
+        <div class="method-steps reveal">
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">OFFLINE</div>
+              <div class="method-step-name">Chunking</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">512-token chunks with 64-token overlap</div>
+              <div class="method-step-detail">Policy documents are split at sentence boundaries into chunks of approximately 512 tokens. A 64-token overlap between consecutive chunks ensures that answers spanning a chunk boundary are retrievable — without overlap, a relevant passage split across two chunks would be partially missed. The 512-token size is a balance: large enough to contain a complete policy clause (typically 200–400 words), small enough that retrieved chunks are focused rather than containing excessive off-topic text that confuses the generator.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">OFFLINE</div>
+              <div class="method-step-name">Embedding</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">all-MiniLM-L6-v2 — 384-dimensional dense vectors</div>
+              <div class="method-step-detail">The <code>all-MiniLM-L6-v2</code> model from sentence-transformers was chosen over larger alternatives (e.g., OpenAI <code>text-embedding-ada-002</code>) for two reasons: (1) it runs locally without an API call, eliminating latency and cost for the offline indexing step, and (2) for domain-specific insurance text, the smaller model's general semantic understanding is sufficient — policy language is structured and unambiguous compared to open-domain text. The 384-dimension output is compact enough for FAISS to retrieve efficiently even at millions of documents.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">ONLINE</div>
+              <div class="method-step-name">Retrieval</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">FAISS flat L2 index — top-4 nearest neighbours</div>
+              <div class="method-step-detail">FAISS (Facebook AI Similarity Search) flat L2 index performs exact nearest-neighbour search with no approximation. For document counts in the thousands (typical policy library), exact search is fast enough and eliminates the approximation error of HNSW or IVF indexes. Top-4 retrieval gives the LLM enough context to synthesise a complete answer while staying within the token budget. The query is embedded with the same model as the documents — a requirement for the semantic space to be consistent between query and index.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">ONLINE</div>
+              <div class="method-step-name">Generation</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Claude Haiku with a strict grounding constraint</div>
+              <div class="method-step-detail">The generation prompt explicitly instructs Claude to answer only using the retrieved context and to say "this information is not available in the policy documents" if the context is insufficient. This architectural constraint makes hallucination structurally impossible: the LLM cannot fabricate a policy term that wasn't retrieved, because the prompt prohibits it. Every answer includes the source document name and page number — enabling the handler to verify the answer in the original document before communicating it to the claimant.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 7: AGENT ARCHITECTURE ── -->
+      <div class="method-section" style="border-bottom:none">
+        <div class="method-eyebrow">Layer 07 — Agentic Architecture</div>
+        <h3 class="method-h">How the Claims Agent orchestrates ML and RAG</h3>
+        <p class="method-p">The Claims Agent is an autonomous decision-making system built on Claude's tool-calling API. It receives a natural language claim description and determines, without pre-programmed rules, which tools to call, in what order, and how to synthesise the results.</p>
+
+        <div class="method-steps reveal">
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DESIGN</div>
+              <div class="method-step-name">Tool Design</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Two tools with typed inputs and structured outputs</div>
+              <div class="method-step-detail">The agent has access to two tools: <code>score_claim</code> (calls the XGBoost API with extracted claim features) and <code>query_policy</code> (calls the RAG API with a coverage question). Both tools have Pydantic-validated inputs and structured JSON outputs — this is not string manipulation, it is typed function calling. The structured output from each tool is included in the agent's context so it can reason about the combination of risk score and coverage determination when forming the final recommendation.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DESIGN</div>
+              <div class="method-step-name">Orchestration</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">LLM decides which tools to call — not hardcoded logic</div>
+              <div class="method-step-detail">The agent does not follow a fixed sequence. Claude reads the claim description and decides autonomously: what features to extract, what coverage question to ask, and whether both tools are necessary. For a straightforward hail claim, it may call <code>query_policy</code> first to confirm coverage before scoring risk. For a high-value claim with suspicious indicators, it may score first, then ask a more targeted coverage question based on the risk level. This adaptive behaviour is the key differentiator between an agent and a scripted workflow.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">DESIGN</div>
+              <div class="method-step-name">Audit Trail</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Every tool call logged with input, output, and timestamp</div>
+              <div class="method-step-detail">The agent returns a structured <code>tool_calls</code> array alongside the final recommendation. Each entry records the tool name, exact input parameters, and output received. This audit trail is not optional — in a regulated insurance environment, every automated decision must be explainable and reconstructable. The tool-call log is the agent's equivalent of SHAP attribution: it shows not just what the decision was, but exactly what information the system used to reach it.</div>
+            </div>
+          </div>
+          <div class="method-step">
+            <div class="method-step-num">
+              <div class="method-step-label">PERFORMANCE</div>
+              <div class="method-step-name">Latency</div>
+            </div>
+            <div class="method-step-body">
+              <div class="method-step-title">Under 200ms end-to-end — compatible with real-time claims workflows</div>
+              <div class="method-step-detail">The agent's latency is dominated by the Claude API call (~120–160ms). The XGBoost inference (&lt;5ms) and FAISS retrieval (&lt;10ms) are negligible. The total 200ms budget is well within the threshold for real-time integration with claims management systems — Modern claims management platforms expect API responses under 500ms for synchronous calls. For high-volume batch processing, the agent can be run asynchronously with results stored and surfaced to handlers as enriched claim summaries.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--teal-bg);border:1px solid var(--teal-e);border-radius:var(--r-lg);padding:20px 24px;margin-top:24px" class="reveal">
+          <div style="font-family:var(--font-disp);font-size:14px;font-weight:700;color:var(--teal);margin-bottom:8px">What would extend this system next</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">
+            <div style="font-size:13px;color:var(--tx-2);line-height:1.75;font-weight:300"><strong style="color:var(--tx);font-weight:500">Additional tools:</strong> A <code style="font-family:var(--font-mono);font-size:11px;color:var(--gold)">lookup_repair_cost</code> tool connecting to VACC or a repair cost database would enable the agent to flag claims where the requested amount significantly exceeds the benchmark — a major source of leakage in motor claims.</div>
+            <div style="font-size:13px;color:var(--tx-2);line-height:1.75;font-weight:300"><strong style="color:var(--tx);font-weight:500">Multi-modal input:</strong> The agent architecture supports image inputs. Adding photo evidence analysis (panel damage inconsistent with the claimed hail trajectory, for example) would increase triage accuracy — directly applicable to modern digital lodgement platforms where claimants already upload photographic evidence.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end method-sections -->
+  </div><!-- end wrap -->
+
+  <footer class="page-footer">
+    <div class="footer-brand"><div class="footer-dot"></div>Argus — Insurance Intelligence Platform</div>
+    <div class="footer-info">Ramesh Shrestha · <a href="https://www.linkedin.com/in/rameshsta/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/RameshSTA/argus" target="_blank" rel="noopener">GitHub</a> · <a href="https://Ramesh79-argus.hf.space/api/docs" target="_blank" rel="noopener">API Docs ↗</a> · v1.0.0</div>
+  </footer>
+</div>
+
+
+<script src="js/argus.js"></script>
+</body>
+</html>

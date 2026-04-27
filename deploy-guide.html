@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Argus — Deployment Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08090E;--surface:#0F1018;--surface2:#161820;--surface3:#1C1F2C;
+  --border:#1E2135;--border2:#252840;
+  --gold:#D4A843;--gold-light:#E2B94A;--gold-bg:rgba(212,168,67,0.08);--gold-border:rgba(212,168,67,0.22);
+  --teal:#3ECFB2;--teal-bg:rgba(62,207,178,0.08);--teal-border:rgba(62,207,178,0.22);
+  --indigo:#6E7AF5;--indigo-bg:rgba(110,122,245,0.08);
+  --red:#E85D5D;--text:#F0F0F6;--text2:#9A9CB8;--text3:#5C5F78;
+  --r:10px;--rl:16px;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.35}
+
+header{position:sticky;top:0;z-index:100;background:rgba(8,9,14,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:56px}
+.logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.03em;display:flex;align-items:center;gap:8px;color:var(--text)}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.header-right{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace}
+
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:24px 0}
+.sb-group{padding:0 20px;margin-bottom:28px}
+.sb-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;font-family:'DM Mono',monospace}
+.sb-link{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text3);padding:6px 0;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;font-family:'DM Sans',sans-serif;transition:color .18s}
+.sb-link:hover{color:var(--text2)}
+.sb-link.active{color:var(--gold-light)}
+.sb-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);min-width:18px}
+.sb-link.active .sb-num{color:var(--gold)}
+
+main{overflow:hidden}
+.section{padding:56px 56px;border-bottom:1px solid var(--border);max-width:860px}
+.rtag{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;font-family:'DM Mono',monospace}
+.rtag::before{content:'';width:18px;height:1px;background:var(--border2)}
+.sh{font-family:'Syne',sans-serif;font-size:clamp(22px,3vw,34px);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:10px}
+.sd{font-size:15px;color:var(--text2);max-width:620px;font-weight:300;line-height:1.8;margin-bottom:36px}
+
+/* Code blocks */
+.code-block{background:var(--surface3);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.code-title{font-size:11.5px;color:var(--text3);font-family:'DM Mono',monospace}
+.copy-btn{font-size:11px;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s}
+.copy-btn:hover{color:var(--text2);border-color:var(--border2)}
+.copy-btn.copied{color:var(--teal);border-color:var(--teal-border)}
+pre{padding:16px;font-size:13px;font-family:'DM Mono',monospace;color:var(--text2);overflow-x:auto;line-height:1.7;white-space:pre}
+.kw{color:var(--gold-light)}
+.cm{color:var(--text3);font-style:italic}
+.st{color:var(--teal)}
+.nb{color:var(--indigo)}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:0;margin-bottom:28px}
+.step{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--border);position:relative}
+.step:last-child{border-bottom:none}
+.step-left{display:flex;flex-direction:column;align-items:center;gap:0}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--gold-bg);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);flex-shrink:0;font-weight:500}
+.step-line{width:1px;background:var(--border);flex:1;margin-top:6px}
+.step-content{flex:1;padding-bottom:4px}
+.step-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.01em}
+.step-desc{font-size:13.5px;color:var(--text2);line-height:1.7;font-weight:300;margin-bottom:12px}
+
+/* Inline code */
+code{font-family:'DM Mono',monospace;font-size:12.5px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 7px;color:var(--gold-light)}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);padding:20px}
+.card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.7;font-weight:300}
+
+/* Alert boxes */
+.alert{border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:13.5px;line-height:1.65}
+.alert-gold{background:var(--gold-bg);border:1px solid var(--gold-border);color:var(--text)}
+.alert-teal{background:var(--teal-bg);border:1px solid var(--teal-border);color:var(--text)}
+.alert strong{font-weight:500}
+.alert-label{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;font-family:'DM Mono',monospace}
+
+/* Table */
+.dtable{width:100%;border-collapse:collapse;margin-bottom:20px}
+.dtable th{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);text-align:left;padding:9px 14px;background:var(--surface2);border-bottom:1px solid var(--border);font-family:'DM Mono',monospace}
+.dtable td{padding:11px 14px;font-size:13.5px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+.dtable tr:last-child td{border-bottom:none}
+.dtable tr:hover td{background:var(--surface2)}
+.td-name{font-weight:500;color:var(--text);font-family:'DM Mono',monospace;font-size:12.5px}
+
+/* File tree */
+.tree{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;font-family:'DM Mono',monospace;font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:20px}
+.tree .dir{color:var(--text)}
+.tree .comment{color:var(--text3)}
+
+@media(max-width:820px){.layout{grid-template-columns:1fr}.sidebar{display:none}.section{padding:36px 20px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-dot"></div>Argus — Deploy Guide</div>
+  <div class="header-right">v1.0.0 · Hugging Face Spaces</div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-label">Setup</div>
+    <button class="sb-link active" onclick="sc('s0')"><span class="sb-num">00</span>Prerequisites</button>
+    <button class="sb-link" onclick="sc('s1')"><span class="sb-num">01</span>Local run</button>
+    <button class="sb-link" onclick="sc('s2')"><span class="sb-num">02</span>GitHub setup</button>
+  </div>
+  <div class="sb-group">
+    <div class="sb-label">Deploy</div>
+    <button class="sb-link" onclick="sc('s3')"><span class="sb-num">03</span>HF Spaces</button>
+    <button class="sb-link" onclick="sc('s4')"><span class="sb-num">04</span>Secrets & env vars</button>
+    <button class="sb-link" onclick="sc('s5')"><span class="sb-num">05</span>Auto-deploy CI</button>
+  </div>
+  <div class="sb-group">
+    <div class="sb-label">Reference</div>
+    <button class="sb-link" onclick="sc('s6')"><span class="sb-num">06</span>API reference</button>
+    <button class="sb-link" onclick="sc('s7')"><span class="sb-num">07</span>Troubleshooting</button>
+  </div>
+</aside>
+
+<main>
+
+<!-- 00 Prerequisites -->
+<div class="section" id="s0">
+  <div class="rtag">00 · Prerequisites</div>
+  <h2 class="sh">What you need before starting</h2>
+  <p class="sd">Everything is free. No credit card required for any step in this guide.</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Accounts to create (free)</div>
+      <div class="card-body">
+        <div style="margin-bottom:6px">🤗 <a href="https://huggingface.co/join" target="_blank" style="color:var(--gold-light)">huggingface.co</a> — hosting</div>
+        <div style="margin-bottom:6px">🐙 <a href="https://github.com/signup" target="_blank" style="color:var(--gold-light)">github.com</a> — source code</div>
+        <div>🤖 <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold-light)">console.anthropic.com</a> — LLM (optional, free tier available)</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Local requirements</div>
+      <div class="card-body">
+        <div style="margin-bottom:6px">🐍 Python 3.11+</div>
+        <div style="margin-bottom:6px">📦 pip or pipenv</div>
+        <div style="margin-bottom:6px">🐳 Docker (optional, for local testing)</div>
+        <div>🔧 git</div>
+      </div>
+    </div>
+  </div>
+  <div class="alert alert-gold">
+    <div class="alert-label">Note on ANTHROPIC_API_KEY</div>
+    The platform works fully without an API key — the RAG and Agent layers use a rule-based fallback extractor. Adding a key enables Claude-generated answers for richer responses.
+  </div>
+</div>
+
+<!-- 01 Local run -->
+<div class="section" id="s1">
+  <div class="rtag">01 · Local Run</div>
+  <h2 class="sh">Running on your machine</h2>
+  <p class="sd">From zero to a running local server in under 5 minutes.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-circle">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Clone the repository</div>
+        <div class="step-desc">Get the code onto your machine.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal</span><button class="copy-btn" onclick="cp(this,'git clone https://github.com/yourusername/argus.git\ncd argus')">Copy</button></div>
+          <pre><span class="kw">git</span> clone https://github.com/yourusername/argus.git
+<span class="kw">cd</span> argus</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">2</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Install dependencies</div>
+        <div class="step-desc">Create a virtual environment and install all packages. This takes 2–3 minutes the first time.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal</span><button class="copy-btn" onclick="cp(this,'python -m venv .venv\nsource .venv/bin/activate   # Windows: .venv\\Scripts\\activate\npip install -r requirements.txt')">Copy</button></div>
+          <pre><span class="kw">python</span> -m venv .venv
+<span class="kw">source</span> .venv/bin/activate   <span class="cm"># Windows: .venv\Scripts\activate</span>
+<span class="kw">pip</span> install -r requirements.txt</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">3</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Configure environment</div>
+        <div class="step-desc">Copy the example env file. Adding your Anthropic API key is optional but enables richer LLM responses.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal</span><button class="copy-btn" onclick="cp(this,'cp .env.example .env\n# Edit .env and add your ANTHROPIC_API_KEY (optional)')">Copy</button></div>
+          <pre><span class="kw">cp</span> .env.example .env
+<span class="cm"># Edit .env and add your ANTHROPIC_API_KEY (optional)</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">4</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Train model + build RAG index</div>
+        <div class="step-desc">Generates 50K synthetic training records, trains the XGBoost model with calibration, and builds the FAISS vector index from policy documents. Takes ~2 minutes.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal</span><button class="copy-btn" onclick="cp(this,'python -m scripts.train_model --generate')">Copy</button></div>
+          <pre><span class="kw">python</span> -m scripts.train_model <span class="nb">--generate</span>
+
+<span class="cm"># Output:</span>
+<span class="cm"># ✓ Generated 50,000 records</span>
+<span class="cm"># AUC-ROC : 0.9420</span>
+<span class="cm"># Model saved → models/argus_model.joblib</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">5</div></div>
+      <div class="step-content">
+        <div class="step-title">Start the server</div>
+        <div class="step-desc">Launch FastAPI with auto-reload. The app opens at <code>http://localhost:8000</code> — the UI, API docs, and all endpoints are live.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal</span><button class="copy-btn" onclick="cp(this,'uvicorn backend.main:app --reload')">Copy</button></div>
+          <pre><span class="kw">uvicorn</span> backend.main:app <span class="nb">--reload</span>
+
+<span class="cm"># Visit:</span>
+<span class="cm"># http://localhost:8000        → UI</span>
+<span class="cm"># http://localhost:8000/api/docs  → Swagger</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 GitHub -->
+<div class="section" id="s2">
+  <div class="rtag">02 · GitHub Setup</div>
+  <h2 class="sh">Push your code to GitHub</h2>
+  <p class="sd">GitHub is the source of truth. Hugging Face will pull from it automatically on every push.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-circle">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Create a new GitHub repository</div>
+        <div class="step-desc">Go to <code>github.com/new</code> → name it <code>argus</code> → Public → No README (we have one) → Create.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">2</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Push the code</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal</span><button class="copy-btn" onclick="cp(this,'git init\ngit add .\ngit commit -m \"feat: initial Argus platform\"\ngit branch -M main\ngit remote add origin https://github.com/yourusername/argus.git\ngit push -u origin main')">Copy</button></div>
+          <pre><span class="kw">git</span> init
+<span class="kw">git</span> add .
+<span class="kw">git</span> commit -m <span class="st">"feat: initial Argus platform"</span>
+<span class="kw">git</span> branch -M main
+<span class="kw">git</span> remote add origin https://github.com/yourusername/argus.git
+<span class="kw">git</span> push -u origin main</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">3</div></div>
+      <div class="step-content">
+        <div class="step-title">Verify .gitignore is working</div>
+        <div class="step-desc">The <code>.gitignore</code> excludes <code>models/*.joblib</code> and <code>data/raw/*.csv</code> — these are too large for GitHub and get regenerated at deploy time via the Dockerfile.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal — verify excluded</span><button class="copy-btn" onclick="cp(this,'git status --short\n# Should NOT see: models/ or data/raw/')">Copy</button></div>
+          <pre><span class="kw">git</span> status --short
+<span class="cm"># Should NOT see: models/ or data/raw/</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 HF Spaces -->
+<div class="section" id="s3">
+  <div class="rtag">03 · Hugging Face Spaces</div>
+  <h2 class="sh">Deploy to Hugging Face Spaces</h2>
+  <p class="sd">Free forever. Never sleeps. The DS community's deployment platform of choice.</p>
+
+  <div class="alert alert-teal">
+    <div class="alert-label">Your live URL will be</div>
+    <strong>https://huggingface.co/spaces/yourusername/argus</strong><br/>
+    Replace <code>yourusername</code> with your actual HuggingFace username.
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-circle">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Create a new Space</div>
+        <div class="step-desc">
+          Go to <a href="https://huggingface.co/new-space" target="_blank" style="color:var(--gold-light)">huggingface.co/new-space</a>
+          <br/>→ Space name: <code>argus</code>
+          <br/>→ License: MIT
+          <br/>→ SDK: <strong>Docker</strong> ← this is the critical choice
+          <br/>→ Hardware: <strong>CPU Basic (free)</strong>
+          <br/>→ Visibility: Public
+          <br/>→ Click <strong>Create Space</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">2</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Add HF as a git remote</div>
+        <div class="step-desc">Hugging Face Spaces is a git repository. You push to it the same way you push to GitHub.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">terminal</span><button class="copy-btn" onclick="cp(this,'git remote add hf https://huggingface.co/spaces/yourusername/argus\ngit push hf main')">Copy</button></div>
+          <pre><span class="kw">git</span> remote add hf https://huggingface.co/spaces/yourusername/argus
+<span class="kw">git</span> push hf main</pre>
+        </div>
+        <div class="step-desc" style="margin-top:8px">HF will ask for your username and a <strong>token</strong> (not your password). Get your token from <a href="https://huggingface.co/settings/tokens" target="_blank" style="color:var(--gold-light)">HF Settings → Access Tokens</a> → New token → Write access.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">3</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Watch the build</div>
+        <div class="step-desc">HF reads your <code>Dockerfile</code> and builds the image. First build takes 5–8 minutes (downloading Python, installing deps, training model). Subsequent pushes take ~2 minutes as layers are cached.</div>
+        <div class="alert alert-gold" style="margin-top:8px">
+          <div class="alert-label">Build log</div>
+          Go to your Space → click the <strong>Logs</strong> tab to watch the Docker build live. If anything fails, the error will be here.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">4</div></div>
+      <div class="step-content">
+        <div class="step-title">Your app is live</div>
+        <div class="step-desc">Once the build completes, your Space shows <span style="color:var(--teal)">● Running</span>. Visit the URL and share it. Every <code>git push hf main</code> triggers a redeploy automatically.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">future deployments — just two commands</span><button class="copy-btn" onclick="cp(this,'git add . && git commit -m \"update\"\ngit push hf main && git push origin main')">Copy</button></div>
+          <pre><span class="kw">git</span> add . <span class="nb">&amp;&amp;</span> <span class="kw">git</span> commit -m <span class="st">"update"</span>
+<span class="kw">git</span> push hf main <span class="nb">&amp;&amp;</span> <span class="kw">git</span> push origin main</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 Secrets -->
+<div class="section" id="s4">
+  <div class="rtag">04 · Secrets & Environment Variables</div>
+  <h2 class="sh">Configure your API keys securely</h2>
+  <p class="sd">Never commit secrets to git. HF Spaces has a built-in secrets manager.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-circle">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Open Space Settings → Secrets</div>
+        <div class="step-desc">In your HF Space → <strong>Settings tab</strong> → scroll to <strong>Repository secrets</strong> section.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">2</div></div>
+      <div class="step-content">
+        <div class="step-title">Add each secret</div>
+        <div class="step-desc">Click <strong>New secret</strong> for each variable below. Secrets are encrypted at rest and injected as environment variables at runtime.</div>
+        <table class="dtable">
+          <thead><tr><th>Secret name</th><th>Value</th><th>Required</th></tr></thead>
+          <tbody>
+            <tr><td><span class="td-name">ANTHROPIC_API_KEY</span></td><td style="font-size:13px;color:var(--text2)">Your key from console.anthropic.com</td><td><span style="font-size:12px;color:var(--text3)">Optional</span></td></tr>
+            <tr><td><span class="td-name">APP_ENV</span></td><td><code>production</code></td><td><span style="font-size:12px;color:var(--text3)">Optional</span></td></tr>
+            <tr><td><span class="td-name">LOG_LEVEL</span></td><td><code>INFO</code></td><td><span style="font-size:12px;color:var(--text3)">Optional</span></td></tr>
+          </tbody>
+        </table>
+        <div class="alert alert-gold">
+          <div class="alert-label">Works without secrets</div>
+          The app runs fully without <code>ANTHROPIC_API_KEY</code>. The RAG and Agent layers use an intelligent rule-based extractor as fallback. Add the key when you want Claude-generated answers.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 CI -->
+<div class="section" id="s5">
+  <div class="rtag">05 · Automatic CI/CD</div>
+  <h2 class="sh">Auto-deploy on every push</h2>
+  <p class="sd">The included GitHub Actions workflow runs tests and pushes to HF Spaces automatically on every merge to main.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-circle">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Add GitHub repository secrets</div>
+        <div class="step-desc">Go to your GitHub repo → <strong>Settings → Secrets and variables → Actions</strong> → New repository secret.</div>
+        <table class="dtable">
+          <thead><tr><th>Secret</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td><span class="td-name">HF_TOKEN</span></td><td style="font-size:13px;color:var(--text2)">HuggingFace token with write access</td></tr>
+            <tr><td><span class="td-name">HF_USERNAME</span></td><td style="font-size:13px;color:var(--text2)">Your HuggingFace username</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle">2</div></div>
+      <div class="step-content">
+        <div class="step-title">The workflow is already included</div>
+        <div class="step-desc">The file at <code>.github/workflows/ci.yml</code> handles everything. On every push to main it: runs pytest → if tests pass → pushes to HF Spaces automatically.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-title">your dev workflow from now on</span><button class="copy-btn" onclick="cp(this,'# Make changes\ngit add .\ngit commit -m \"feat: improve SHAP visualization\"\ngit push origin main\n# GitHub CI runs tests → deploys to HF automatically')">Copy</button></div>
+          <pre><span class="cm"># Make changes</span>
+<span class="kw">git</span> add .
+<span class="kw">git</span> commit -m <span class="st">"feat: improve SHAP visualization"</span>
+<span class="kw">git</span> push origin main
+<span class="cm"># CI runs tests → deploys to HF automatically</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 API Reference -->
+<div class="section" id="s6">
+  <div class="rtag">06 · API Reference</div>
+  <h2 class="sh">All endpoints</h2>
+  <p class="sd">Full interactive docs available at <code>/api/docs</code> (Swagger UI) and <code>/api/redoc</code> (ReDoc).</p>
+
+  <table class="dtable">
+    <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code style="color:var(--teal)">GET</code></td><td><code>/api/health</code></td><td style="font-size:13px;color:var(--text2)">System health check — model + vector store status</td></tr>
+      <tr><td><code style="color:var(--gold)">POST</code></td><td><code>/api/score</code></td><td style="font-size:13px;color:var(--text2)">Fraud risk scoring with SHAP feature attribution</td></tr>
+      <tr><td><code style="color:var(--gold)">POST</code></td><td><code>/api/query</code></td><td style="font-size:13px;color:var(--text2)">RAG policy question answering with source citations</td></tr>
+      <tr><td><code style="color:var(--gold)">POST</code></td><td><code>/api/agent</code></td><td style="font-size:13px;color:var(--text2)">Full claims intelligence agent — orchestrates ML + RAG</td></tr>
+      <tr><td><code style="color:var(--gold)">POST</code></td><td><code>/api/train</code></td><td style="font-size:13px;color:var(--text2)">Re-train the XGBoost model on latest data</td></tr>
+      <tr><td><code style="color:var(--teal)">GET</code></td><td><code>/api/index/status</code></td><td style="font-size:13px;color:var(--text2)">FAISS vector index status and document count</td></tr>
+      <tr><td><code style="color:var(--gold)">POST</code></td><td><code>/api/index/rebuild</code></td><td style="font-size:13px;color:var(--text2)">Rebuild the FAISS index from policy documents</td></tr>
+      <tr><td><code style="color:var(--teal)">GET</code></td><td><code>/api/docs</code></td><td style="font-size:13px;color:var(--text2)">Interactive Swagger UI</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 07 Troubleshooting -->
+<div class="section" id="s7">
+  <div class="rtag">07 · Troubleshooting</div>
+  <h2 class="sh">Common issues</h2>
+  <p class="sd">Most problems have a one-line fix. Check the HF Spaces Logs tab first.</p>
+
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px">
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">Build fails — "No space left on device"</div>
+      <div class="card-body">HF free tier has limited disk space. In the Dockerfile, reduce training samples: change <code>--samples 20000</code> to <code>--samples 10000</code>.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">Build fails — "killed" during pip install</div>
+      <div class="card-body">Memory limit hit. Add <code>--no-cache-dir</code> to the pip install command in the Dockerfile. Also consider using the <code>cpu-upgrade</code> hardware tier ($0.05/hr).</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">App shows "model not loaded" on first request</div>
+      <div class="card-body">The Dockerfile pre-trains the model during build so this shouldn't happen. If it does, check the build logs for training errors. The model auto-trains on first request as a fallback.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">RAG returns "No documents found"</div>
+      <div class="card-body">The policy files in <code>data/policies/</code> weren't copied into the Docker image. Ensure they are NOT listed in <code>.gitignore</code> and are committed to git.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--gold)">Slow first API call after deploy</div>
+      <div class="card-body">Normal — the model is loading from disk and SHAP explainer is initialising. Subsequent calls are fast (&lt;200ms). Add a health check ping in the Dockerfile's CMD to pre-warm on startup.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--gold)">ANTHROPIC_API_KEY not being picked up</div>
+      <div class="card-body">Secrets added in HF Space settings are injected as environment variables — they don't need to be in the Dockerfile. Restart the Space after adding a secret for it to take effect.</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-title">useful debug commands (run locally with Docker)</span><button class="copy-btn" onclick="cp(this,'# Build image locally\ndocker build -t argus .\n\n# Run locally on port 7860\ndocker run -p 7860:7860 -e ANTHROPIC_API_KEY=your_key argus\n\n# Check logs\ndocker logs $(docker ps -q --filter ancestor=argus)')">Copy</button></div>
+    <pre><span class="cm"># Build image locally</span>
+<span class="kw">docker</span> build -t argus .
+
+<span class="cm"># Run locally on port 7860</span>
+<span class="kw">docker</span> run -p 7860:7860 -e ANTHROPIC_API_KEY=your_key argus
+
+<span class="cm"># Check logs</span>
+<span class="kw">docker</span> logs $(docker ps -q --filter ancestor=argus)</pre>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function sc(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+function cp(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied')},1800);
+  });
+}
+
+const sections=['s0','s1','s2','s3','s4','s5','s6','s7'];
+window.addEventListener('scroll',()=>{
+  let cur=sections[0];
+  sections.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<140)cur=id});
+  document.querySelectorAll('.sb-link').forEach((l,i)=>l.classList.toggle('active',sections[i]===cur));
+},{passive:true});
+</script>
+</body>
+</html>
